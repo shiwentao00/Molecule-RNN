@@ -1,2 +1,2 @@
-# Molecue-RNN
+# Molecule-RNN
 Generate molecules for drug discovery.
