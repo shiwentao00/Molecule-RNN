@@ -1,0 +1,22 @@
+---
+ out_dir: '../results/run_1/'
+ dataset_dir: "../zinc-smiles/"
+ vocab_path: "../alphabet.yaml"
+ percentage: 0.01
+
+ rnn_config:
+  # embedding
+  num_embeddings: 54 # 34 chars + sos + eos + padding(0)
+  embedding_dim: 256
+
+  # rnn
+  input_size: 256 # size of the recurrent neural network
+  hidden_size: 512
+  num_layers: 3
+  dropout: 0.6
+
+ batch_size: 128
+ shuffle: True
+ num_epoch: 400
+ learning_rate: 0.003
+ weight_decay: 0.0007
