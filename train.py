@@ -60,17 +60,15 @@ if __name__ == "__main__":
         # train
         model.train()
         train_loss = 0
-        for data in dataloader:
+        for data, lengths in dataloader:
             optimizer.zero_grad()
             data.to(device)
-            smiles = data.y
-            lengths = [len(smile) for smile in smiles]
-            smiles = [torch.tensor(smile) for smile in smiles]
-            smiles = pad_sequence(smiles, batch_first=True,
-                                  padding_value=0).to(device)
-            preds = model(data)
+            print(data)
+            print(lengths)
+            print('----------------------')
+            preds = model(data, lengths)
             targets = pack_padded_sequence(
-                smiles, lengths, batch_first=True, enforce_sorted=False).data
+                data, lengths, batch_first=True, enforce_sorted=False).data
             loss = loss_function(preds, targets)
             loss.backward()
             optimizer.step()
