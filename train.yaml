@@ -2,7 +2,7 @@
  out_dir: '../results/run_1/'
  dataset_dir: "../zinc-smiles/"
  vocab_path: "./vocab.yaml"
- percentage: 0.0002
+ percentage: 0.2
 
  rnn_config:
   # embedding
