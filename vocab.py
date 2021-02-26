@@ -22,10 +22,11 @@ if __name__ == "__main__":
         dataset_dir) if isfile(join(dataset_dir, f))]
 
     all_selfies = []
-    for f in smiles_files:
+    for i, f in enumerate(smiles_files):
         smiles = read_smiles_file(dataset_dir + f, 1)
         selfies = [sf.encoder(x) for x in smiles if sf.encoder(x) is not None]
         all_selfies.extend(selfies)
+        print('{} out of {} files processed.'.format(i, len(smiles_files)))
 
     vocab = sf.get_alphabet_from_selfies(all_selfies)
     vocab.add('<sos>')
