@@ -1,6 +1,5 @@
 import yaml
 import os
-import random
 import torch
 import torch.nn as nn
 from torch.nn.utils.rnn import pad_sequence
@@ -63,16 +62,13 @@ if __name__ == "__main__":
         for data, lengths in dataloader:
             optimizer.zero_grad()
             data.to(device)
-            print(data)
-            print(lengths)
-            print('----------------------')
             preds = model(data, lengths)
             targets = pack_padded_sequence(
                 data, lengths, batch_first=True, enforce_sorted=False).data
             loss = loss_function(preds, targets)
             loss.backward()
             optimizer.step()
-            train_loss += loss.item() * data.num_graphs
+            train_loss += loss.item() * batch_size
         train_losses.append(train_loss / train_size)
 
         print('epoch {}, train loss: {}.'.format(epoch, train_losses[-1]))

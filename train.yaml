@@ -1,12 +1,12 @@
 ---
  out_dir: '../results/run_1/'
  dataset_dir: "../zinc-smiles/"
- vocab_path: "../vocab.yaml"
- percentage: 0.001
+ vocab_path: "./vocab.yaml"
+ percentage: 0.2
 
  rnn_config:
   # embedding
-  num_embeddings: 54 # 34 chars + sos + eos + padding(0)
+  num_embeddings: 174 # 34 chars + sos + eos + padding(0)
   embedding_dim: 256
 
   # rnn
@@ -15,7 +15,7 @@
   num_layers: 3
   dropout: 0.6
 
- batch_size: 4
+ batch_size: 512
  shuffle: True
  num_epoch: 400
  learning_rate: 0.003
