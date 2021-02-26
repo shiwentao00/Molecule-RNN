@@ -66,6 +66,9 @@ class SELFIEVocab:
         with open(vocab_path, 'r') as f:
             self.vocab = yaml.full_load(f)
 
+        self.int2tocken = {value: key for key, value in self.vocab.items()}
+        self.int2tocken[0] = '<pad>'
+
     def tokenize_smiles(self, mol):
         """convert the smiles to selfies, then return 
         integer tokens."""
@@ -77,6 +80,9 @@ class SELFIEVocab:
         ints.append(self.vocab['<eos>'])
 
         return ints
+
+    def list2selfies(self, selfies):
+        return "".join(selfies)
 
 
 def pad_collate(batch):

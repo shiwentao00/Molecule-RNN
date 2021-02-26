@@ -3,6 +3,7 @@ import torch.nn as nn
 from torch.nn.utils.rnn import pad_sequence
 from torch.nn.utils.rnn import pack_padded_sequence
 from torch.nn.utils.rnn import pad_packed_sequence
+from torch.nn.functional import softmax
 
 
 class RNN(torch.nn.Module):
@@ -47,9 +48,44 @@ class RNN(torch.nn.Module):
         # the targets will also be packed.
         return embeddings
 
-    def sample(self):
-        # TO-DO
-        pass
+    def sample(self, vocab):
+        output = []
+
+        # get integer of "start of sequence"
+        start_int = vocab.vocab['<sos>']
+
+        # create a tensor of shape [batch_size=1, seq_step=1]
+        sos = torch.tensor(start_int).unsqueeze(
+            dim=0).unsqueeze(dim=0)
+
+        # sample first output
+        x = self.embedding_layer(sos)
+        x, (h, c) = self.rnn(x)
+        x = self.linear(x)
+        x = softmax(x, dim=-1)
+        x = torch.multinomial(x.squeeze(), 1)
+        output.append(x.item())
+
+        # use first output to iteratively sample until <eos> occurs
+        while output[-1] != vocab.vocab['<eos>']:
+            x = x.unsqueeze(dim=0)
+            x = self.embedding_layer(x)
+            x, (h, c) = self.rnn(x)
+            x = self.linear(x)
+            x = softmax(x, dim=-1)
+            x = torch.multinomial(x.squeeze(), 1)
+            output.append(x.item())
+
+        # convert ingete to tokens
+        output = [vocab.int2tocken[x] for x in output]
+
+        # popout <eos>
+        output.pop()
+
+        # convert to SLEFIES
+        output = vocab.list2selfies(output)
+
+        return output
 
     def beam_search(self):
         # TO-DO
