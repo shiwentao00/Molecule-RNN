@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
     all_selfies = []
     for i, f in enumerate(smiles_files):
-        smiles = read_smiles_file(dataset_dir + f, 0.0001)
+        smiles = read_smiles_file(dataset_dir + f, 1)
         selfies = [sf.encoder(x) for x in smiles if sf.encoder(x) is not None]
         all_selfies.extend(selfies)
         print('{} out of {} files processed.'.format(i, len(smiles_files)))
