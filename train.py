@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
     # model and training configuration
     rnn_config = config['rnn_config']
-    model = RNN(rnn_config, device).to(device)
+    model = RNN(rnn_config).to(device)
     learning_rate = config['learning_rate']
     weight_decay = config['weight_decay']
     loss_function = nn.CrossEntropyLoss(reduction='mean')
@@ -61,7 +61,7 @@ if __name__ == "__main__":
         for data, lengths in dataloader:
             optimizer.zero_grad()
             data.to(device)
-            lengths.to(device)
+            # lengths.to(device)
             preds = model(data, lengths)
             targets = pack_padded_sequence(
                 data, lengths, batch_first=True, enforce_sorted=False).data

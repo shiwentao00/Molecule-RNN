@@ -5,9 +5,8 @@ from torch.nn.utils.rnn import pack_padded_sequence
 
 
 class RNN(torch.nn.Module):
-    def __init__(self, rnn_config, device):
+    def __init__(self, rnn_config):
         super(RNN, self).__init__()
-        self.device = device
 
         self.embedding_layer = nn.Embedding(
             num_embeddings=rnn_config['num_embeddings'],
