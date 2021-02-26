@@ -1,19 +1,18 @@
 import torch
 import torch.nn as nn
-from torch.nn.utils.rnn import pad_sequence
 from torch.nn.utils.rnn import pack_padded_sequence
-from torch.nn.utils.rnn import pad_packed_sequence
 from torch.nn.functional import softmax
 
 
 class RNN(torch.nn.Module):
     def __init__(self, rnn_config):
         super(RNN, self).__init__()
+        global PADDING_IDX
 
         self.embedding_layer = nn.Embedding(
             num_embeddings=rnn_config['num_embeddings'],
             embedding_dim=rnn_config['embedding_dim'],
-            padding_idx=0
+            padding_idx=PADDING_IDX
         )
 
         self.rnn = nn.LSTM(
@@ -24,8 +23,10 @@ class RNN(torch.nn.Module):
             dropout=rnn_config['dropout']
         )
 
+        # output does not include <sos>, so
+        # decrease the num_embeddings by 2
         self.linear = nn.Linear(
-            rnn_config['hidden_size'], rnn_config['num_embeddings'])
+            rnn_config['hidden_size'], rnn_config['num_embeddings'] - 1)
 
     def forward(self, data, lengths):
         embeddings = self.embedding_layer(data)
@@ -86,7 +87,3 @@ class RNN(torch.nn.Module):
         output = vocab.list2selfies(output)
 
         return output
-
-    def beam_search(self):
-        # TO-DO
-        pass

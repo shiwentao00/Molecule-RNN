@@ -7,10 +7,14 @@ Molecule-RNN is a recurrent neural network built with Pytorch to generate molecu
 2. Modify the path of dataset in ```train.yaml``` to your downloaded dataset by setting the value of ```dataset_dir```.
 
 3. Run the training script.
-```python train.py```
+```
+python train.py
+```
 
 The training loss:
 
 ## Sampling
 We can generate molecules by sampling the model according to the output distribution.
-```python sample.py```
+```
+python sample.py
+```

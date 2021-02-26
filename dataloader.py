@@ -19,6 +19,22 @@ def dataloader_gen(dataset_dir, percentage, vocab_path, batch_size, shuffle, dro
     return dataloader, len(dataset)
 
 
+def pad_collate(batch):
+    """
+    Put the sequences of different lengths in a minibatch by paddding.
+    """
+    global PADDING_IDX
+
+    lengths = [len(x) for x in batch]
+
+    batch = [torch.tensor(x) for x in batch]
+
+    # use any ingeter that is not in vocab as padding
+    x_padded = pad_sequence(batch, batch_first=True, padding_value=PADDING_IDX)
+
+    return x_padded, lengths
+
+
 class SMILESDataset(Dataset):
     def __init__(self, dataset_dir: str, percentage: float, vocab):
         """
@@ -67,7 +83,6 @@ class SELFIEVocab:
             self.vocab = yaml.full_load(f)
 
         self.int2tocken = {value: key for key, value in self.vocab.items()}
-        self.int2tocken[0] = '<pad>'
 
     def tokenize_smiles(self, mol):
         """convert the smiles to selfies, then return 
@@ -83,16 +98,3 @@ class SELFIEVocab:
 
     def list2selfies(self, selfies):
         return "".join(selfies)
-
-
-def pad_collate(batch):
-    """
-    Put the sequences of different lengths in a minibatch by paddding.
-    """
-    lengths = [len(x) for x in batch]
-
-    batch = [torch.tensor(x) for x in batch]
-
-    x_padded = pad_sequence(batch, batch_first=True, padding_value=0)
-
-    return x_padded, lengths

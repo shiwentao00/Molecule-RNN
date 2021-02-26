@@ -1,12 +1,12 @@
 ---
  out_dir: '../results/run_1/'
  dataset_dir: "../zinc-smiles/"
- vocab_path: "./vocab.yaml"
+ vocab_path: "./vocab/selfies_vocab.yaml"
  percentage: 0.2
 
  rnn_config:
   # embedding
-  num_embeddings: 174 # 173 from vocab.yaml + padding(0)
+  num_embeddings: 174 # size of vocab + <eos> + <sos>
   embedding_dim: 256
 
   # rnn

@@ -15,27 +15,31 @@ def read_smiles_file(path, percentage):
 
 
 if __name__ == "__main__":
-    dataset_dir = "../zinc-smiles/"
-    output_vocab = "../vocab.yaml"
+    dataset_dir = "../../zinc-smiles/"
+    output_vocab = "./selfies_vocab.yaml"
 
     smiles_files = [f for f in listdir(
         dataset_dir) if isfile(join(dataset_dir, f))]
 
     all_selfies = []
     for i, f in enumerate(smiles_files):
-        smiles = read_smiles_file(dataset_dir + f, 1)
+        smiles = read_smiles_file(dataset_dir + f, 0.0001)
         selfies = [sf.encoder(x) for x in smiles if sf.encoder(x) is not None]
         all_selfies.extend(selfies)
         print('{} out of {} files processed.'.format(i, len(smiles_files)))
 
     vocab = sf.get_alphabet_from_selfies(all_selfies)
-    vocab.add('<sos>')
-    vocab.add('<eos>')
 
     vocab_dict = {}
     for i, token in enumerate(vocab):
-        # reserve 0 for padding
-        vocab_dict[token] = i + 1
+        vocab_dict[token] = i
+
+    i += 1
+    vocab_dict['<eos>'] = i
+    i += 1
+    vocab_dict['<sos>'] = i
+    i += 1
+    vocab_dict['<pad>'] = i
 
     with open(output_vocab, 'w') as f:
         yaml.dump(vocab_dict, f)

@@ -39,8 +39,13 @@ if __name__ == "__main__":
     dataloader, train_size = dataloader_gen(
         dataset_dir, percentage, vocab_path, batch_size, shuffle, drop_last=False)
 
-    # model and training configuration
+    # the padding idex for batching, it is set to global because
+    # the collate_fn of dataloader needs it.
     rnn_config = config['rnn_config']
+    global PADDING_IDX
+    PADDING_IDX = rnn_config['num_embeddings'] - 1
+
+    # model and training configuration
     model = RNN(rnn_config).to(device)
     learning_rate = config['learning_rate']
     weight_decay = config['weight_decay']
