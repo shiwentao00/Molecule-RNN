@@ -59,11 +59,20 @@ if __name__ == "__main__":
         model.train()
         train_loss = 0
         for data, lengths in dataloader:
+            # the lengths are decreased by 1 because we dont'
+            # use <eos> for input and we don't need <sos> for
+            # output during traning.
+            lengths = [length - 1 for length in lengths]
+
             optimizer.zero_grad()
             data = data.to(device)
             preds = model(data, lengths)
+
+            # The <sos> token is removed before packing, because
+            # we don't need <sos> of output during training.
             targets = pack_padded_sequence(
-                data, lengths, batch_first=True, enforce_sorted=False).data
+                data[:, 1:], lengths, batch_first=True, enforce_sorted=False).data
+
             loss = loss_function(preds, targets)
             loss.backward()
             optimizer.step()
