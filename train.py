@@ -62,6 +62,7 @@ if __name__ == "__main__":
             optimizer.zero_grad()
             data.to(device)
             print(data)
+            print(data.device)
             # lengths.to(device)
             preds = model(data, lengths)
             targets = pack_padded_sequence(
