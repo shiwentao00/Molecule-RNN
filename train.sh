@@ -5,6 +5,6 @@
 #PBS -A hpc_michal01
 #PBS -j oe
 
-cd /work/derick/drug-gen-project/DeepDruGen/
+cd /work/derick/molecule-generator-project/Molecule-RNN/
 
 singularity exec --nv -B /work,/project,/usr/lib64 /work/derick/singularities/pytorch-and-others.simg python train.py
