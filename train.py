@@ -60,10 +60,7 @@ if __name__ == "__main__":
         train_loss = 0
         for data, lengths in dataloader:
             optimizer.zero_grad()
-            data.to(device)
-            print(data)
-            print(data.device)
-            # lengths.to(device)
+            data = data.to(device)
             preds = model(data, lengths)
             targets = pack_padded_sequence(
                 data, lengths, batch_first=True, enforce_sorted=False).data
