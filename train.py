@@ -39,7 +39,7 @@ if __name__ == "__main__":
     dataloader, train_size = dataloader_gen(
         dataset_dir, percentage, vocab_path, batch_size, shuffle, drop_last=False)
 
-    # the padding idex for batching, it is set to global because
+    # the padding index (last index) for batching, it is set to global because
     # the collate_fn of dataloader needs it.
     rnn_config = config['rnn_config']
     global PADDING_IDX

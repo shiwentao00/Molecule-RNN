@@ -23,10 +23,10 @@ class RNN(torch.nn.Module):
             dropout=rnn_config['dropout']
         )
 
-        # output does not include <sos>, so
+        # output does not include <sos> and <pad>, so
         # decrease the num_embeddings by 2
         self.linear = nn.Linear(
-            rnn_config['hidden_size'], rnn_config['num_embeddings'] - 1)
+            rnn_config['hidden_size'], rnn_config['num_embeddings'] - 2)
 
     def forward(self, data, lengths):
         embeddings = self.embedding_layer(data)
