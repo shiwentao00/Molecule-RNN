@@ -2,12 +2,12 @@ import torch
 import torch.nn as nn
 from torch.nn.utils.rnn import pack_padded_sequence
 from torch.nn.functional import softmax
+from pad_idx import PADDING_IDX
 
 
 class RNN(torch.nn.Module):
     def __init__(self, rnn_config):
         super(RNN, self).__init__()
-        global PADDING_IDX
 
         self.embedding_layer = nn.Embedding(
             num_embeddings=rnn_config['num_embeddings'],

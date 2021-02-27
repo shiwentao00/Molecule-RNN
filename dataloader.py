@@ -5,6 +5,7 @@ from os.path import isfile, join
 import selfies as sf
 import yaml
 from torch.nn.utils.rnn import pad_sequence
+from pad_idx import PADDING_IDX
 
 
 def dataloader_gen(dataset_dir, percentage, vocab_path, batch_size, shuffle, drop_last=False):
@@ -23,7 +24,6 @@ def pad_collate(batch):
     """
     Put the sequences of different lengths in a minibatch by paddding.
     """
-    global PADDING_IDX
 
     lengths = [len(x) for x in batch]
 
