@@ -48,7 +48,7 @@ if __name__ == "__main__":
     optimizer = torch.optim.Adam(
         model.parameters(), lr=learning_rate, weight_decay=weight_decay, amsgrad=True)
     scheduler = ReduceLROnPlateau(
-        optimizer, mode='max', factor=0.5, patience=10, cooldown=40, min_lr=0.0001, verbose=True)
+        optimizer, mode='max', factor=0.5, patience=5, cooldown=10, min_lr=0.0001, verbose=True)
 
     # train and validation, the results are saved.
     train_losses = []
