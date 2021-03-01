@@ -1,18 +1,26 @@
 import torch
+import re
+import yaml
+import selfies as sf
+
 from torch.utils.data import Dataset, DataLoader
 from os import listdir
 from os.path import isfile, join
-import selfies as sf
-import yaml
 from torch.nn.utils.rnn import pad_sequence
 from pad_idx import PADDING_IDX
 
 
-def dataloader_gen(dataset_dir, percentage, vocab_path, batch_size, shuffle, drop_last=False):
+def dataloader_gen(dataset_dir, percentage, which_vocab, vocab_path, batch_size, shuffle, drop_last=False):
     """
     Genrate the dataloader for training
     """
-    vocab = SELFIEVocab(vocab_path)
+    if which_vocab == "selfies":
+        vocab = SELFIEVocab(vocab_path)
+    elif which_vocab == "regex":
+        vocab = RegExVocab(vocab_path)
+    else:
+        raise ValueError("Wrong vacab name for configuration which_vocab!")
+
     dataset = SMILESDataset(dataset_dir, percentage, vocab)
     dataloader = DataLoader(
         dataset=dataset, batch_size=batch_size, shuffle=shuffle, collate_fn=pad_collate)
@@ -56,9 +64,12 @@ class SMILESDataset(Dataset):
         print("total number of SMILES loaded: ", len(self.data))
 
         # convert the smiles to selfies
-        self.data = [sf.encoder(x)
-                     for x in self.data if sf.encoder(x) is not None]
-        print("total number of valid SELFIES: ", len(self.data))
+        if self.vocab.name == "selfies":
+            self.data = [sf.encoder(x)
+                         for x in self.data if sf.encoder(x) is not None]
+            print("total number of valid SELFIES: ", len(self.data))
+
+        # convert the smiles to
 
     def read_smiles_file(self, path: str):
         with open(path, 'r') as f:
@@ -68,6 +79,8 @@ class SMILESDataset(Dataset):
 
     def __getitem__(self, index: int):
         mol = self.data[index]
+
+        # convert the data into integer tokens
         mol = self.vocab.tokenize_smiles(mol)
 
         return mol
@@ -76,8 +89,53 @@ class SMILESDataset(Dataset):
         return len(self.data)
 
 
+class RegExVocab:
+    def __init__(self, vocab_path):
+        self.name = "regex"
+
+        # load the pre-computed vocabulary
+        with open(vocab_path, 'r') as f:
+            self.vocab = yaml.full_load(f)
+
+        self.int2tocken = {value: key for key, value in self.vocab.items()}
+
+    def tokenize_smiles(self, smiles):
+        """Takes a SMILES string and returns a list of tokens.
+        This will swap 'Cl' and 'Br' to 'L' and 'R' and treat
+        '[xx]' as one token."""
+        regex = '(\[[^\[\]]{1,6}\])'
+        smiles = self.replace_halogen(smiles)
+        char_list = re.split(regex, smiles)
+        tokenized = ['<sos>']
+        for char in char_list:
+            if char.startswith('['):
+                tokenized.append(char)
+            else:
+                chars = [unit for unit in char]
+                [tokenized.append(unit) for unit in chars]
+        tokenized.append('<eos>')
+
+        # convert tokens to integer tokens
+        tokenized = [self.vocab[token] for token in tokenized]
+        return tokenized
+
+    def replace_halogen(self, string):
+        """Regex to replace Br and Cl with single letters"""
+        br = re.compile('Br')
+        cl = re.compile('Cl')
+        string = br.sub('R', string)
+        string = cl.sub('L', string)
+
+        return string
+
+    def list2smiles(self, smiles):
+        return "".join(smiles)
+
+
 class SELFIEVocab:
-    def __init__(self, vocab_path) -> None:
+    def __init__(self, vocab_path):
+        self.name = "selfies"
+
         # load the pre-computed vocabulary
         with open(vocab_path, 'r') as f:
             self.vocab = yaml.full_load(f)

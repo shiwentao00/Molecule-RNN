@@ -28,6 +28,7 @@ if __name__ == "__main__":
 
     # training data
     dataset_dir = config['dataset_dir']
+    which_vocab = config['which_vocab']
     vocab_path = config['vocab_path']
     percentage = config['percentage']
 
@@ -37,7 +38,7 @@ if __name__ == "__main__":
     num_workers = os.cpu_count()
     print('number of workers to load data: ', num_workers)
     dataloader, train_size = dataloader_gen(
-        dataset_dir, percentage, vocab_path, batch_size, shuffle, drop_last=False)
+        dataset_dir, percentage, which_vocab, vocab_path, batch_size, shuffle, drop_last=False)
 
     # model and training configuration
     rnn_config = config['rnn_config']
@@ -59,7 +60,8 @@ if __name__ == "__main__":
         model.train()
         train_loss = 0
         for data, lengths in dataloader:
-            # the lengths are decreased by 1 because we dont'
+            print(data)
+            # the lengths are decreased by 1 because we don't
             # use <eos> for input and we don't need <sos> for
             # output during traning.
             lengths = [length - 1 for length in lengths]
