@@ -19,5 +19,6 @@
  batch_size: 512
  shuffle: True
  num_epoch: 80
- learning_rate: 0.003
+ which_optimizer: sgd
+ learning_rate: 0.0015
  weight_decay: 0.0007

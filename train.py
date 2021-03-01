@@ -46,10 +46,17 @@ if __name__ == "__main__":
     learning_rate = config['learning_rate']
     weight_decay = config['weight_decay']
     loss_function = nn.CrossEntropyLoss(reduction='mean')
-    optimizer = torch.optim.Adam(
-        model.parameters(), lr=learning_rate, weight_decay=weight_decay, amsgrad=True)
+    if config['which_optimizer'] == "adam":
+        optimizer = torch.optim.Adam(
+            model.parameters(), lr=learning_rate, weight_decay=weight_decay, amsgrad=True)
+    elif config['which_optimizer'] == "sgd":
+        optimizer = torch.optim.SGD(
+            model.parameters(), lr=learning_rate, weight_decay=weight_decay, momentum=0.9)
+    else:
+        raise ValueError(
+            "Wrong value for optimizers! select between 'adam' and 'sgd'.")
     scheduler = ReduceLROnPlateau(
-        optimizer, mode='max', factor=0.5, patience=5, cooldown=10, min_lr=0.0001, verbose=True)
+        optimizer, mode='max', factor=0.5, patience=5, cooldown=20, min_lr=0.0001, verbose=True)
 
     # train and validation, the results are saved.
     train_losses = []
@@ -60,7 +67,6 @@ if __name__ == "__main__":
         model.train()
         train_loss = 0
         for data, lengths in dataloader:
-            print(data)
             # the lengths are decreased by 1 because we don't
             # use <eos> for input and we don't need <sos> for
             # output during traning.
