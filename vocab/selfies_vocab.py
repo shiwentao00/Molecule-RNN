@@ -9,7 +9,7 @@ import selfies as sf
 
 def read_smiles_file(path, percentage):
     with open(path, 'r') as f:
-        smiles = [line.split(' ')[0] for line in f.readlines()]
+        smiles = [line.split(' ')[0] for line in f.readlines()[1:]]
     num_data = len(smiles)
     return smiles[0:int(num_data * percentage)]
 
