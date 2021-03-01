@@ -72,8 +72,9 @@ class SMILESDataset(Dataset):
         # convert the smiles to
 
     def read_smiles_file(self, path: str):
+        # need to exclude first line which is not SMILES
         with open(path, 'r') as f:
-            smiles = [line.split(' ')[0] for line in f.readlines()]
+            smiles = [line.split(' ')[0] for line in f.readlines()[1:]]
         num_data = len(smiles)
         return smiles[0:int(num_data * self.percentage)]
 
