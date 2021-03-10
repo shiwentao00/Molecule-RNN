@@ -78,6 +78,10 @@ if __name__ == "__main__":
 
             # The <sos> token is removed before packing, because
             # we don't need <sos> of output during training.
+            # the image_captioning project uses the same method
+            # which directly feeds the packed sequences to
+            # the loss function:
+            # https://github.com/yunjey/pytorch-tutorial/blob/master/tutorials/03-advanced/image_captioning/train.py
             targets = pack_padded_sequence(
                 data[:, 1:], lengths, batch_first=True, enforce_sorted=False).data
 
