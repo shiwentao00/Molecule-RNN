@@ -62,9 +62,9 @@ if __name__ == "__main__":
     train_losses = []
     best_train_loss, best_train_epoch = float('inf'), None
     num_epoch = config['num_epoch']
+
+    model.train()
     for epoch in range(1, 1 + num_epoch):
-        # train
-        model.train()
         train_loss = 0
         for data, lengths in dataloader:
             # the lengths are decreased by 1 because we don't

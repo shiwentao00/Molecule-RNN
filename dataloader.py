@@ -115,7 +115,6 @@ class RegExVocab:
                 chars = [unit for unit in char]
                 [tokenized.append(unit) for unit in chars]
         tokenized.append('<eos>')
-
         # convert tokens to integer tokens
         tokenized = [self.vocab[token] for token in tokenized]
         return tokenized
@@ -129,7 +128,7 @@ class RegExVocab:
 
         return string
 
-    def list2smiles(self, smiles):
+    def combine_list(self, smiles):
         return "".join(smiles)
 
 
@@ -155,5 +154,5 @@ class SELFIEVocab:
 
         return ints
 
-    def list2selfies(self, selfies):
+    def combine_list(self, selfies):
         return "".join(selfies)

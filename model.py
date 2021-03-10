@@ -77,13 +77,13 @@ class RNN(torch.nn.Module):
             x = torch.multinomial(x.squeeze(), 1)
             output.append(x.item())
 
-        # convert ingete to tokens
+        # convert integers to tokens
         output = [vocab.int2tocken[x] for x in output]
 
         # popout <eos>
         output.pop()
 
         # convert to SLEFIES
-        output = vocab.list2selfies(output)
+        output = vocab.combine_list(output)
 
         return output
