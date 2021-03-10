@@ -14,7 +14,7 @@
   input_size: 256 # size of the recurrent neural network
   hidden_size: 1024
   num_layers: 4
-  dropout: 0.6
+  dropout: 0.2
 
  batch_size: 512
  shuffle: True
