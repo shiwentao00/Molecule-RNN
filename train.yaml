@@ -1,9 +1,9 @@
 ---
- out_dir: '../results/run_5/'
+ out_dir: '../results/run_6/'
  dataset_dir: "../zinc-smiles/"
  which_vocab: "regex" # "selfies" or "regex"
  vocab_path: "./vocab/regex_vocab.yaml"
- percentage: 0.1
+ percentage: 0.5
 
  rnn_config:
   # embedding
@@ -18,7 +18,7 @@
 
  batch_size: 512
  shuffle: True
- num_epoch: 100
+ num_epoch: 20
  which_optimizer: sgd
  learning_rate: 0.0015
  weight_decay: 0.0007
