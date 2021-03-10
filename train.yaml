@@ -1,5 +1,5 @@
 ---
- out_dir: '../results/run_4/'
+ out_dir: '../results/run_5/'
  dataset_dir: "../zinc-smiles/"
  which_vocab: "regex" # "selfies" or "regex"
  vocab_path: "./vocab/regex_vocab.yaml"
