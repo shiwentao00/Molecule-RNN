@@ -30,10 +30,11 @@ class RNN(torch.nn.Module):
 
     def forward(self, data, lengths):
         embeddings = self.embedding_layer(data)
-        # print(embeddings.size())
-        # print(graph_embedding.size())
 
         # pack the padded input
+        # the lengths are decreased by 1 because we don't
+        # use <eos> for input and we don't need <sos> for
+        # output during traning.
         embeddings = pack_padded_sequence(
             input=embeddings, lengths=lengths, batch_first=True, enforce_sorted=False)
 
