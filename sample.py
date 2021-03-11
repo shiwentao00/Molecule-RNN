@@ -1,21 +1,59 @@
 import argparse
 import torch
 import yaml
-from dataloader import SELFIEVocab, RegExVocab
 import selfies as sf
+import multiprocessing as mp
+from dataloader import SELFIEVocab, RegExVocab
 from model import RNN
 
 
+def get_args():
+    parser = argparse.ArgumentParser("python")
+    parser.add_argument("-result_dir",
+                        required=True,
+                        help="directory of result files including configuration, \
+                         loss, trained model, and sampled molecules"
+                        )
+    parser.add_argument("-num_samples",
+                        required=False,
+                        default=1,
+                        help="number of samples to generate per process"
+                        )
+    parser.add_argument("-num_procs",
+                        required=False,
+                        default=1,
+                        help="number of processes to use"
+                        )
+    return parser.parse_args()
+
+
+def sample(num_samples):
+    """
+    Returns a list of sampled SMILES.
+    """
+    # using process id as random seed of pytorch, such
+    # that different processes sample different molecules
+    torch.manual_seed(mp.current_process()._identity[0])
+
+    res = []
+    for _ in range(num_samples):
+        mol = model.sample(vocab)
+
+        if vocab.name == "selfies":
+            mol = sf.decoder(mol)
+
+        res.append(mol + "\n")
+
+    return res
+
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("config_dir",
-                        help="configuration file to load trained model.")
-    args = parser.parse_args()
-    config_dir = args.config_dir
-    print("configuration file path: ", config_dir)
+    args = get_args()
+    result_dir = args.result_dir
 
     # load the configuartion file in output
-    #config_dir = "../results/run_1/config.yaml"
+    # config_dir = "../results/run_1/config.yaml"
+    config_dir = result_dir + "config.yaml"
     with open(config_dir, 'r') as f:
         config = yaml.full_load(f)
 
@@ -41,9 +79,17 @@ if __name__ == "__main__":
         map_location=torch.device('cpu')))
     model.eval()
 
-    mol = model.sample(vocab)
+    # initiate multiple processes to sample
+    num_samples = int(args.num_samples)
+    num_procs = int(args.num_procs)
+    print("creating {} processes, each process sampling {} molecules.".format(
+        num_procs, num_samples))
+    with mp.Pool(num_procs) as p:
+        smiles = p.map(sample, [num_samples] * num_procs)
 
-    if vocab.name == "selfies":
-        mol = sf.decoder(mol)
-
-    print('Sampled SMILES: \n', mol)
+    # wrtite results to file
+    out_file = open(result_dir + "sampled_molecules.out", "w")
+    for smiles_list in smiles:
+        for mol in smiles_list:
+            out_file.write(mol)
+    out_file.close

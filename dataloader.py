@@ -69,16 +69,14 @@ class SMILESDataset(Dataset):
                          for x in self.data if sf.encoder(x) is not None]
             print("total number of valid SELFIES: ", len(self.data))
 
-        # convert the smiles to
-
-    def read_smiles_file(self, path: str):
+    def read_smiles_file(self, path):
         # need to exclude first line which is not SMILES
         with open(path, 'r') as f:
             smiles = [line.split(' ')[0] for line in f.readlines()[1:]]
         num_data = len(smiles)
         return smiles[0:int(num_data * self.percentage)]
 
-    def __getitem__(self, index: int):
+    def __getitem__(self, index):
         mol = self.data[index]
 
         # convert the data into integer tokens
