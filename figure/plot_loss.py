@@ -1,7 +1,7 @@
 import yaml
 import matplotlib.pyplot as plt
 import seaborn as sns
-result_dir = "../../results/run_2/"
+result_dir = "../../results/run_7/"
 with open(result_dir + "loss.yaml", "r") as f:
     loss = yaml.full_load(f)
 fig, ax = plt.subplots()
