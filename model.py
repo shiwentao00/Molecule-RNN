@@ -81,6 +81,9 @@ class RNN(torch.nn.Module):
         # convert integers to tokens
         output = [vocab.int2tocken[x] for x in output]
 
+        # TODO: replace L with Cl and R with Br or the
+        # output SMILES will be invalid.
+
         # popout <eos>
         output.pop()
 

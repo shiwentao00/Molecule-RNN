@@ -6,7 +6,7 @@ from os.path import isfile, join
 import re
 
 
-def read_smiles_file(path, percentage):
+def read_smiles_file_zinc(path, percentage):
     with open(path, 'r') as f:
         smiles = [line.split(' ')[0] for line in f.readlines()[1:]]
     num_data = len(smiles)
@@ -48,7 +48,7 @@ if __name__ == "__main__":
         dataset_dir) if isfile(join(dataset_dir, f))]
     all_tokens = []
     for i, f in enumerate(smiles_files):
-        smiles = read_smiles_file(dataset_dir + f, 1)
+        smiles = read_smiles_file_zinc(dataset_dir + f, 1)
         tokens = []
         [tokens.extend(tokenize(x)) for x in smiles]
         all_tokens.extend(tokens)
