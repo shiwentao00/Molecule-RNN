@@ -1,13 +1,13 @@
 ---
- out_dir: '../results/run_7/'
- dataset_dir: "../zinc-smiles/"
+ out_dir: '../results/run_8/'
+ dataset_dir: "../chembl-data/chembl_28/chembl_28_sqlite/chembl28-cleaned.smi" 
  which_vocab: "regex" # "selfies" or "regex"
- vocab_path: "./vocab/regex_vocab.yaml"
- percentage: 0.1
+ vocab_path: "./vocab/chembl_regex_vocab.yaml"
+ percentage: 1
 
  rnn_config:
   # embedding
-  num_embeddings: 105 # size of vocab + <eos> + <sos> + <pad>
+  num_embeddings: 75 # size of vocab + <eos> + <sos> + <pad>
   embedding_dim: 256
 
   # rnn
@@ -18,7 +18,7 @@
 
  batch_size: 512
  shuffle: True
- num_epoch: 50
+ num_epoch: 120
  which_optimizer: sgd
- learning_rate: 0.01
+ learning_rate: 0.02
  weight_decay: 0.0007

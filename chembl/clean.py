@@ -1,6 +1,6 @@
 """
 Pre-process the Chembl dataset:
-    1. Normalize the molecule.
+    1. Normalize the molecule (this step also removes stereochemical info).
     2. Convert the SMILES to canonical form.
 """
 from tqdm import tqdm
@@ -12,12 +12,15 @@ RDLogger.DisableLog('rdApp.*')
 class MolCleaner:
     def __init__(self):
         self.normarizer = MolStandardize.normalize.Normalizer()
+        self.choose_frag = MolStandardize.fragment.LargestFragmentChooser()
 
     def process(self, mol):
         mol = Chem.MolFromSmiles(mol)
 
         if mol is not None:
             mol = self.normarizer.normalize(mol)
+            mol = self.choose_frag.choose(mol)
+
             mol = Chem.MolToSmiles(mol, isomericSmiles=False, canonical=True)
             return mol
         else:
@@ -39,6 +42,9 @@ if __name__ == "__main__":
         mol = cleaner.process(mol)
         if mol is not None and 20 < len(mol) < 120:
             processed.append(mol)
+
+    processed = set(processed)
+
     print("number of SMILES after cleaning:", len(processed))
 
     with open(out_path, "w") as f:

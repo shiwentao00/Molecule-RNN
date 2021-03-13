@@ -44,23 +44,19 @@ def pad_collate(batch):
 
 
 class SMILESDataset(Dataset):
-    def __init__(self, dataset_dir: str, percentage: float, vocab):
+    def __init__(self, smiles_file, percentage, vocab):
         """
-        dataset_dir: directory of the dataset downloaded from Zinc
-        percantage: percentage of the dataset to use
+        smiles_file: path to the .smi file containing SMILES.
+        percantage: percentage of the dataset to use.
         """
         super(SMILESDataset, self).__init__()
         assert(0 < percentage <= 1)
 
         self.percentage = percentage
-        self.smiles_files = [f for f in listdir(
-            dataset_dir) if isfile(join(dataset_dir, f))]
         self.vocab = vocab
 
         # load eaqual portion of data from each tranche
-        self.data = []
-        for f in self.smiles_files:
-            self.data.extend(self.read_smiles_file(dataset_dir + f))
+        self.data = self.read_smiles_file(smiles_file)
         print("total number of SMILES loaded: ", len(self.data))
 
         # convert the smiles to selfies
@@ -71,8 +67,8 @@ class SMILESDataset(Dataset):
 
     def read_smiles_file(self, path):
         # need to exclude first line which is not SMILES
-        with open(path, 'r') as f:
-            smiles = [line.split(' ')[0] for line in f.readlines()[1:]]
+        with open(path, "r") as f:
+            smiles = [line.strip("\n") for line in f.readlines()]
         num_data = len(smiles)
         return smiles[0:int(num_data * self.percentage)]
 
@@ -96,7 +92,16 @@ class RegExVocab:
         with open(vocab_path, 'r') as f:
             self.vocab = yaml.full_load(f)
 
-        self.int2tocken = {value: key for key, value in self.vocab.items()}
+        # a dictionary to map integer back to SMILES
+        # tokens for sampling
+        self.int2tocken = {}
+        for token, num in self.vocab.items():
+            if token == "R":
+                self.int2tocken[num] = "Br"
+            elif token == "L":
+                self.int2tocken[num] = "Cl"
+            else:
+                self.int2tocken[num] = token
 
     def tokenize_smiles(self, smiles):
         """Takes a SMILES string and returns a list of tokens.
