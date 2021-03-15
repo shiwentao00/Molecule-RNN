@@ -1,5 +1,5 @@
 ---
- out_dir: '../results/run_10/'
+ out_dir: '../results/run_11/'
  dataset_dir: "../chembl-data/chembl_28/chembl_28_sqlite/chembl28-cleaned.smi" 
  which_vocab: "regex" # "selfies" or "regex"
  vocab_path: "./vocab/chembl_regex_vocab.yaml"
@@ -13,7 +13,7 @@
   # rnn
   input_size: 256 # size of the recurrent neural network
   hidden_size: 1024
-  num_layers: 3
+  num_layers: 4
   dropout: 0.2
 
  batch_size: 512
