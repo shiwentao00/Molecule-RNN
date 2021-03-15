@@ -56,7 +56,7 @@ if __name__ == "__main__":
         raise ValueError(
             "Wrong value for optimizers! select between 'adam' and 'sgd'.")
     scheduler = ReduceLROnPlateau(
-        optimizer, mode='max', factor=0.5, patience=5, cooldown=20, min_lr=0.0001, verbose=True)
+        optimizer, mode='max', factor=0.5, patience=5, cooldown=30, min_lr=0.0001, verbose=True)
 
     # train and validation, the results are saved.
     train_losses = []

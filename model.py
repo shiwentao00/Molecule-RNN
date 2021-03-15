@@ -72,7 +72,7 @@ class RNN(torch.nn.Module):
         while output[-1] != vocab.vocab['<eos>']:
             x = x.unsqueeze(dim=0)
             x = self.embedding_layer(x)
-            x, (h, c) = self.rnn(x)
+            x, (h, c) = self.rnn(x, (h, c))
             x = self.linear(x)
             x = softmax(x, dim=-1)
             x = torch.multinomial(x.squeeze(), 1)
