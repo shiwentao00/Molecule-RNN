@@ -10,7 +10,7 @@ from torch.nn.utils.rnn import pad_sequence
 from pad_idx import PADDING_IDX
 
 
-def dataloader_gen(dataset_dir, percentage, which_vocab, vocab_path, batch_size, shuffle, drop_last=False):
+def dataloader_gen(dataset_dir, percentage, which_vocab, vocab_path, batch_size, shuffle, drop_last=True):
     """
     Genrate the dataloader for training
     """
@@ -23,7 +23,7 @@ def dataloader_gen(dataset_dir, percentage, which_vocab, vocab_path, batch_size,
 
     dataset = SMILESDataset(dataset_dir, percentage, vocab)
     dataloader = DataLoader(
-        dataset=dataset, batch_size=batch_size, shuffle=shuffle, collate_fn=pad_collate)
+        dataset=dataset, batch_size=batch_size, shuffle=shuffle, drop_last=drop_last, collate_fn=pad_collate)
 
     return dataloader, len(dataset)
 
