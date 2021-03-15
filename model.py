@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from torch.nn.utils.rnn import pack_padded_sequence
+from torch.nn.utils.rnn import pad_packed_sequence
 from torch.nn.functional import softmax
 from pad_idx import PADDING_IDX
 
@@ -29,26 +30,31 @@ class RNN(torch.nn.Module):
             rnn_config['hidden_size'], rnn_config['num_embeddings'] - 2)
 
     def forward(self, data, lengths):
-        embeddings = self.embedding_layer(data)
+        x = self.embedding_layer(data)
 
         # pack the padded input
         # the lengths are decreased by 1 because we don't
         # use <eos> for input and we don't need <sos> for
         # output during traning.
-        embeddings = pack_padded_sequence(
-            input=embeddings, lengths=lengths, batch_first=True, enforce_sorted=False)
+        x = pack_padded_sequence(
+            input=x, lengths=lengths, batch_first=True, enforce_sorted=False)
 
         # recurrent network, discard (h_n, c_n) in output.
         # Tearcher-forcing is used here, so we directly feed
         # the whole sequence to model.
-        embeddings, _ = self.rnn(embeddings)
+        x, _ = self.rnn(x)
+
+        # pad the sequences back to shape 
+        # [batch_size, seq_length, embedding_size]
+        x, _ = pad_packed_sequence(
+            x, batch_first=True, padding_value=PADDING_IDX)
 
         # linear layer to generate input of softmax
-        embeddings = self.linear(embeddings.data)
+        x = self.linear(x)
 
         # return the packed representation for backpropagation,
         # the targets will also be packed.
-        return embeddings
+        return x
 
     def sample(self, vocab):
         output = []

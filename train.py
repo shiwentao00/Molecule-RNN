@@ -6,6 +6,8 @@ from torch.nn.utils.rnn import pack_padded_sequence
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from dataloader import dataloader_gen
 from model import RNN
+from pad_idx import PADDING_IDX
+
 
 if __name__ == "__main__":
     # detect cpu or gpu
@@ -45,7 +47,8 @@ if __name__ == "__main__":
     model = RNN(rnn_config).to(device)
     learning_rate = config['learning_rate']
     weight_decay = config['weight_decay']
-    loss_function = nn.CrossEntropyLoss(reduction='mean')
+    loss_function = nn.CrossEntropyLoss(
+        reduction='mean', ignore_index=PADDING_IDX)
     if config['which_optimizer'] == "adam":
         optimizer = torch.optim.Adam(
             model.parameters(), lr=learning_rate, weight_decay=weight_decay, amsgrad=True)
@@ -74,6 +77,7 @@ if __name__ == "__main__":
 
             optimizer.zero_grad()
             data = data.to(device)
+
             preds = model(data, lengths)
 
             # The <sos> token is removed before packing, because
@@ -82,10 +86,17 @@ if __name__ == "__main__":
             # which directly feeds the packed sequences to
             # the loss function:
             # https://github.com/yunjey/pytorch-tutorial/blob/master/tutorials/03-advanced/image_captioning/train.py
-            targets = pack_padded_sequence(
-                data[:, 1:], lengths, batch_first=True, enforce_sorted=False).data
+            # targets = pack_padded_sequence(
+            #    data[:, 1:], lengths, batch_first=True, enforce_sorted=False).data
 
-            loss = loss_function(preds, targets)
+            # The <sos> token is removed before packing, because
+            # we don't need <sos> of output during training.
+            targets = data[:, 1:]
+
+            loss = loss_function(
+                preds.view(-1, rnn_config['num_embeddings'] - 2),
+                targets.contiguous().view(-1).long()
+            )
             loss.backward()
             optimizer.step()
             train_loss += loss.item() * batch_size
