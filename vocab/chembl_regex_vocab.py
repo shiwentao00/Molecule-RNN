@@ -5,7 +5,7 @@ import re
 from tqdm import tqdm
 
 
-def read_smiles_file_zinc(path, percentage):
+def read_smiles_file(path, percentage):
     with open(path, 'r') as f:
         smiles = [line.strip("\n") for line in f.readlines()]
     num_data = len(smiles)
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     output_vocab = "./chembl_regex_vocab.yaml"
 
     # read smiles as strings
-    smiles = read_smiles_file_zinc(dataset_dir, 1)
+    smiles = read_smiles_file(dataset_dir, 1)
 
     print("computing token set...")
     tokens = []
