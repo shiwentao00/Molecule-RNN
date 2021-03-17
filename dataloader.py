@@ -4,13 +4,12 @@ import yaml
 import selfies as sf
 
 from torch.utils.data import Dataset, DataLoader
-from os import listdir
-from os.path import isfile, join
 from torch.nn.utils.rnn import pad_sequence
 from pad_idx import PADDING_IDX
 
 
-def dataloader_gen(dataset_dir, percentage, which_vocab, vocab_path, batch_size, shuffle, drop_last=True):
+def dataloader_gen(dataset_dir, percentage, which_vocab, vocab_path, 
+        batch_size, shuffle, drop_last=True):
     """
     Genrate the dataloader for training
     """
@@ -18,12 +17,16 @@ def dataloader_gen(dataset_dir, percentage, which_vocab, vocab_path, batch_size,
         vocab = SELFIEVocab(vocab_path)
     elif which_vocab == "regex":
         vocab = RegExVocab(vocab_path)
+    elif which_vocab == "char":
+        vocab = CharVocab(vocab_path)
     else:
         raise ValueError("Wrong vacab name for configuration which_vocab!")
 
     dataset = SMILESDataset(dataset_dir, percentage, vocab)
     dataloader = DataLoader(
-        dataset=dataset, batch_size=batch_size, shuffle=shuffle, drop_last=drop_last, collate_fn=pad_collate)
+        dataset=dataset, batch_size=batch_size, shuffle=shuffle, 
+        drop_last=drop_last, collate_fn=pad_collate
+    )
 
     return dataloader, len(dataset)
 
@@ -32,12 +35,10 @@ def pad_collate(batch):
     """
     Put the sequences of different lengths in a minibatch by paddding.
     """
-
     lengths = [len(x) for x in batch]
 
     batch = [torch.tensor(x) for x in batch]
 
-    # use any ingeter that is not in vocab as padding
     x_padded = pad_sequence(batch, batch_first=True, padding_value=PADDING_IDX)
 
     return x_padded, lengths
@@ -83,6 +84,70 @@ class SMILESDataset(Dataset):
     def __len__(self):
         return len(self.data)
 
+
+class CharVocab:
+    def __init__(self, vocab_path):
+        self.name = "char"
+
+        # load the pre-computed vocabulary
+        with open(vocab_path, 'r') as f:
+            self.vocab = yaml.full_load(f)
+
+        # a dictionary to map integer back to SMILES
+        # tokens for sampling
+        self.int2tocken = {}
+        for token, num in self.vocab.items():
+            self.int2tocken[num] = token
+
+        # a hashset of tokens for O(1) lookup
+        self.tokens = self.vocab.keys() 
+
+    def tokenize_smiles(self, smiles):
+        """
+        Takes a SMILES string and returns a list of tokens.
+        Atoms with 2 characters are treated as one token. The 
+        logic references this code piece:
+        https://github.com/topazape/LSTM_Chem/blob/master/lstm_chem/utils/smiles_tokenizer2.py
+        """
+        n = len(smiles)
+        tokenized = ['<sos>']
+        i = 0
+
+        # process all characters except the last one
+        while (i < n - 1):
+            # procoss tokens with length 2 first
+            c2 = smiles[i:i + 2]
+            if c2 in self.tokens:
+                tokenized.append(c2)
+                i += 2
+                continue
+
+            # tokens with length 2
+            c1 = smiles[i]
+            if c1 in self.tokens:
+                tokenized.append(c1)
+                i += 1
+                continue
+
+            raise ValueError(
+                "Unrecognized charater in SMILES: {}, {}".format(c1, c2))
+
+        # process last character if there is any
+        if i == n:
+            pass
+        elif i == n - 1 and smiles[i] in self.tokens:
+            tokenized.append(smiles[i])
+        else:
+            raise ValueError(
+                "Unrecognized charater in SMILES: {}".format(smiles[i]))
+        
+        tokenized.append('<eos>')
+
+        tokenized = [self.vocab[token] for token in tokenized]
+        return tokenized
+
+    def combine_list(self, smiles):
+        return "".join(smiles)
 
 class RegExVocab:
     def __init__(self, vocab_path):
