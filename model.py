@@ -1,3 +1,4 @@
+# Copyright: Wentao Shi, 2021
 import torch
 import torch.nn as nn
 from torch.nn.utils.rnn import pack_padded_sequence

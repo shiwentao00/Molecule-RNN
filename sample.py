@@ -1,3 +1,4 @@
+# Copyright: Wentao Shi, 2021
 import argparse
 import torch
 import yaml

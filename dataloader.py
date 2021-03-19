@@ -1,3 +1,4 @@
+# Copyright: Wentao Shi, 2021
 import torch
 import re
 import yaml
@@ -8,8 +9,8 @@ from torch.nn.utils.rnn import pad_sequence
 from pad_idx import PADDING_IDX
 
 
-def dataloader_gen(dataset_dir, percentage, which_vocab, vocab_path, 
-        batch_size, shuffle, drop_last=True):
+def dataloader_gen(dataset_dir, percentage, which_vocab, vocab_path,
+                   batch_size, shuffle, drop_last=True):
     """
     Genrate the dataloader for training
     """
@@ -23,8 +24,9 @@ def dataloader_gen(dataset_dir, percentage, which_vocab, vocab_path,
         raise ValueError("Wrong vacab name for configuration which_vocab!")
 
     dataset = SMILESDataset(dataset_dir, percentage, vocab)
+
     dataloader = DataLoader(
-        dataset=dataset, batch_size=batch_size, shuffle=shuffle, 
+        dataset=dataset, batch_size=batch_size, shuffle=shuffle,
         drop_last=drop_last, collate_fn=pad_collate
     )
 
@@ -70,7 +72,9 @@ class SMILESDataset(Dataset):
         # need to exclude first line which is not SMILES
         with open(path, "r") as f:
             smiles = [line.strip("\n") for line in f.readlines()]
+
         num_data = len(smiles)
+
         return smiles[0:int(num_data * self.percentage)]
 
     def __getitem__(self, index):
@@ -100,7 +104,7 @@ class CharVocab:
             self.int2tocken[num] = token
 
         # a hashset of tokens for O(1) lookup
-        self.tokens = self.vocab.keys() 
+        self.tokens = self.vocab.keys()
 
     def tokenize_smiles(self, smiles):
         """
@@ -140,7 +144,7 @@ class CharVocab:
         else:
             raise ValueError(
                 "Unrecognized charater in SMILES: {}".format(smiles[i]))
-        
+
         tokenized.append('<eos>')
 
         tokenized = [self.vocab[token] for token in tokenized]
@@ -148,6 +152,7 @@ class CharVocab:
 
     def combine_list(self, smiles):
         return "".join(smiles)
+
 
 class RegExVocab:
     def __init__(self, vocab_path):
@@ -175,7 +180,9 @@ class RegExVocab:
         regex = '(\[[^\[\]]{1,6}\])'
         smiles = self.replace_halogen(smiles)
         char_list = re.split(regex, smiles)
+
         tokenized = ['<sos>']
+
         for char in char_list:
             if char.startswith('['):
                 tokenized.append(char)
@@ -183,8 +190,10 @@ class RegExVocab:
                 chars = [unit for unit in char]
                 [tokenized.append(unit) for unit in chars]
         tokenized.append('<eos>')
+
         # convert tokens to integer tokens
         tokenized = [self.vocab[token] for token in tokenized]
+
         return tokenized
 
     def replace_halogen(self, string):
@@ -214,10 +223,12 @@ class SELFIEVocab:
         """convert the smiles to selfies, then return 
         integer tokens."""
         ints = [self.vocab['<sos>']]
+
         #encoded_selfies = sf.encoder(smiles)
         selfies_list = list(sf.split_selfies(mol))
         for token in selfies_list:
             ints.append(self.vocab[token])
+
         ints.append(self.vocab['<eos>'])
 
         return ints

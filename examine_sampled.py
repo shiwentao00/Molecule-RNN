@@ -1,3 +1,4 @@
+# Copyright: Wentao Shi, 2021
 import argparse
 from rdkit import Chem
 

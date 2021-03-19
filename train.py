@@ -1,3 +1,4 @@
+# Copyright: Wentao Shi, 2021
 import yaml
 import os
 import torch
@@ -32,13 +33,16 @@ if __name__ == "__main__":
     vocab_path = config['vocab_path']
     percentage = config['percentage']
 
-    # dataloaders
+    # create dataloader
     batch_size = config['batch_size']
     shuffle = config['shuffle']
     num_workers = os.cpu_count()
     print('number of workers to load data: ', num_workers)
     dataloader, train_size = dataloader_gen(
-        dataset_dir, percentage, which_vocab, vocab_path, batch_size, shuffle, drop_last=False)
+        dataset_dir, percentage, which_vocab,
+        vocab_path, batch_size, shuffle,
+        drop_last=False
+    )
 
     # model and training configuration
     rnn_config = config['rnn_config']
@@ -46,17 +50,29 @@ if __name__ == "__main__":
     learning_rate = config['learning_rate']
     weight_decay = config['weight_decay']
     loss_function = nn.CrossEntropyLoss(reduction='mean')
+
+    # create optimizer
     if config['which_optimizer'] == "adam":
         optimizer = torch.optim.Adam(
-            model.parameters(), lr=learning_rate, weight_decay=weight_decay, amsgrad=True)
+            model.parameters(), lr=learning_rate,
+            weight_decay=weight_decay, amsgrad=True
+        )
     elif config['which_optimizer'] == "sgd":
         optimizer = torch.optim.SGD(
-            model.parameters(), lr=learning_rate, weight_decay=weight_decay, momentum=0.9)
+            model.parameters(), lr=learning_rate,
+            weight_decay=weight_decay, momentum=0.9
+        )
     else:
         raise ValueError(
             "Wrong value for optimizers! select between 'adam' and 'sgd'.")
+
+    # learning rate scheduler
     scheduler = ReduceLROnPlateau(
-        optimizer, mode='max', factor=0.5, patience=5, cooldown=30, min_lr=0.0001, verbose=True)
+        optimizer, mode='min',
+        factor=0.5, patience=5,
+        cooldown=30, min_lr=0.0001,
+        verbose=True
+    )
 
     # train and validation, the results are saved.
     train_losses = []
@@ -89,6 +105,7 @@ if __name__ == "__main__":
             loss.backward()
             optimizer.step()
             train_loss += loss.item() * batch_size
+
         train_losses.append(train_loss / train_size)
 
         print('epoch {}, train loss: {}.'.format(epoch, train_losses[-1]))
