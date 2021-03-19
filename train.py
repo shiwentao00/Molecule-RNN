@@ -104,7 +104,10 @@ if __name__ == "__main__":
             loss = loss_function(preds, targets)
             loss.backward()
             optimizer.step()
-            train_loss += loss.item() * batch_size
+
+            # accumulate loss over mini-batches
+            # last minibatch's size != batch_size
+            train_loss += loss.item() * data.size()[0]
 
         train_losses.append(train_loss / train_size)
 
