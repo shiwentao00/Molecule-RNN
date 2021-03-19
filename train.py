@@ -69,7 +69,7 @@ if __name__ == "__main__":
     # learning rate scheduler
     scheduler = ReduceLROnPlateau(
         optimizer, mode='min',
-        factor=0.5, patience=5,
+        factor=0.5, patience=10,
         cooldown=30, min_lr=0.0001,
         verbose=True
     )

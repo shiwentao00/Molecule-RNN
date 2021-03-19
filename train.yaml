@@ -1,5 +1,5 @@
 ---
- out_dir: '../results/run_17/'
+ out_dir: '../results/run_18/'
  dataset_dir: "../chembl-data/chembl_28/chembl_28_sqlite/chembl28-cleaned.smi" 
  which_vocab: "regex" # "selfies", "regex", or "char"
  vocab_path: "./vocab/chembl_regex_vocab.yaml"
@@ -20,5 +20,5 @@
  shuffle: True
  num_epoch: 300
  which_optimizer: sgd
- learning_rate: 0.04
+ learning_rate: 0.08
  weight_decay: 0.0005
