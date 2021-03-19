@@ -1,5 +1,5 @@
 ---
- out_dir: '../results/run_18/'
+ out_dir: '../results/run_19/'
  dataset_dir: "../chembl-data/chembl_28/chembl_28_sqlite/chembl28-cleaned.smi" 
  which_vocab: "regex" # "selfies", "regex", or "char"
  vocab_path: "./vocab/chembl_regex_vocab.yaml"
@@ -9,6 +9,7 @@
   # embedding
   num_embeddings: 75 # size of vocab + <eos> + <sos> + <pad>
   embedding_dim: 512
+  rnn_type: "GRU" # LSTM or GRU
 
   # rnn
   input_size: 512 # size of the recurrent neural network
@@ -20,5 +21,5 @@
  shuffle: True
  num_epoch: 300
  which_optimizer: sgd
- learning_rate: 0.08
+ learning_rate: 0.04
  weight_decay: 0.0005

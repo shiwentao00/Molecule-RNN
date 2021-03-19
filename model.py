@@ -16,13 +16,26 @@ class RNN(torch.nn.Module):
             padding_idx=PADDING_IDX
         )
 
-        self.rnn = nn.LSTM(
-            input_size=rnn_config['input_size'],
-            hidden_size=rnn_config['hidden_size'],
-            num_layers=rnn_config['num_layers'],
-            batch_first=True,
-            dropout=rnn_config['dropout']
-        )
+        if rnn_config['rnn_type'] == 'LSTM':
+            self.rnn = nn.LSTM(
+                input_size=rnn_config['input_size'],
+                hidden_size=rnn_config['hidden_size'],
+                num_layers=rnn_config['num_layers'],
+                batch_first=True,
+                dropout=rnn_config['dropout']
+            )
+        elif rnn_config['rnn_type'] == 'GRU':
+            self.rnn = nn.GRU(
+                input_size=rnn_config['input_size'],
+                hidden_size=rnn_config['hidden_size'],
+                num_layers=rnn_config['num_layers'],
+                batch_first=True,
+                dropout=rnn_config['dropout']
+            )
+        else:
+            raise ValueError(
+                "rnn_type should be either 'LSTM' or 'GRU'."
+            )
 
         # output does not include <sos> and <pad>, so
         # decrease the num_embeddings by 2
@@ -63,7 +76,7 @@ class RNN(torch.nn.Module):
 
         # sample first output
         x = self.embedding_layer(sos)
-        x, (h, c) = self.rnn(x)
+        x, hidden = self.rnn(x)
         x = self.linear(x)
         x = softmax(x, dim=-1)
         x = torch.multinomial(x.squeeze(), 1)
@@ -73,7 +86,7 @@ class RNN(torch.nn.Module):
         while output[-1] != vocab.vocab['<eos>']:
             x = x.unsqueeze(dim=0)
             x = self.embedding_layer(x)
-            x, (h, c) = self.rnn(x, (h, c))
+            x, hidden = self.rnn(x, hidden)
             x = self.linear(x)
             x = softmax(x, dim=-1)
             x = torch.multinomial(x.squeeze(), 1)
