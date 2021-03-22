@@ -38,6 +38,7 @@ if __name__ == "__main__":
     shuffle = config['shuffle']
     num_workers = os.cpu_count()
     print('number of workers to load data: ', num_workers)
+    print('which vocabulary to use: ', which_vocab)
     dataloader, train_size = dataloader_gen(
         dataset_dir, percentage, which_vocab,
         vocab_path, batch_size, shuffle,
@@ -91,7 +92,6 @@ if __name__ == "__main__":
             optimizer.zero_grad()
             data = data.to(device)
             preds = model(data, lengths)
-            print(data.size())
             # The <sos> token is removed before packing, because
             # we don't need <sos> of output during training.
             # the image_captioning project uses the same method
