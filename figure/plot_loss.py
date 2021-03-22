@@ -1,5 +1,6 @@
 import argparse
 import yaml
+import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -20,6 +21,13 @@ with open(result_dir + "loss.yaml", "r") as f:
     loss = yaml.full_load(f)
 fig, ax = plt.subplots()
 ax = sns.lineplot(data=loss, dashes=False)
+
+# find minimum validaiton loss
+min_val_loss = np.min(loss)
+pos = np.nonzero(loss == min_val_loss)[0]
+plt.axvline(x=pos, linewidth=2, color='grey', linestyle='--')
+plt.text(pos-35, min_val_loss+0.05, str(min_val_loss)[0:6])
+
 ax.set(xlabel="Epoch")
 ax.set(ylabel="Loss")
 plt.savefig(result_dir + 'loss.png', bbox_inches="tight")
