@@ -1,5 +1,5 @@
 ---
- out_dir: '../results/run_21/'
+ out_dir: '../results/run_22/'
  dataset_dir: "../chembl-data/chembl_28/chembl_28_sqlite/chembl28-cleaned.smi" 
  which_vocab: "char" # "selfies", "regex", or "char"
  vocab_path: "./vocab/chembl_char_vocab.yaml"
@@ -9,7 +9,7 @@
   # embedding
   num_embeddings: 47 # size of vocab + <eos> + <sos> + <pad>
   embedding_dim: 512
-  rnn_type: "LSTM" # LSTM or GRU
+  rnn_type: "GRU" # LSTM or GRU
 
   # rnn
   input_size: 512 # size of the recurrent neural network
