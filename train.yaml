@@ -1,8 +1,8 @@
 ---
- out_dir: '../results/run_19/'
+ out_dir: '../results/run_16/'
  dataset_dir: "../chembl-data/chembl_28/chembl_28_sqlite/chembl28-cleaned.smi" 
- which_vocab: "regex" # "selfies", "regex", or "char"
- vocab_path: "./vocab/chembl_regex_vocab.yaml"
+ which_vocab: "char" # "selfies", "regex", or "char"
+ vocab_path: "./vocab/chembl_char_vocab.yaml"
  percentage: 1
 
  rnn_config:

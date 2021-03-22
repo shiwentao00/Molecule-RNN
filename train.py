@@ -91,7 +91,7 @@ if __name__ == "__main__":
             optimizer.zero_grad()
             data = data.to(device)
             preds = model(data, lengths)
-
+            print(data.size())
             # The <sos> token is removed before packing, because
             # we don't need <sos> of output during training.
             # the image_captioning project uses the same method
