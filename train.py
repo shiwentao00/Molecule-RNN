@@ -36,13 +36,14 @@ if __name__ == "__main__":
     # create dataloader
     batch_size = config['batch_size']
     shuffle = config['shuffle']
+    PADDING_IDX = config['rnn_config']['num_embeddings'] - 1
     num_workers = os.cpu_count()
     print('number of workers to load data: ', num_workers)
     print('which vocabulary to use: ', which_vocab)
     dataloader, train_size = dataloader_gen(
         dataset_dir, percentage, which_vocab,
-        vocab_path, batch_size, shuffle,
-        drop_last=False
+        vocab_path, batch_size, PADDING_IDX,
+        shuffle, drop_last=False
     )
 
     # model and training configuration

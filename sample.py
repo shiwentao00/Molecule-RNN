@@ -4,7 +4,7 @@ import torch
 import yaml
 import selfies as sf
 import multiprocessing as mp
-from dataloader import SELFIEVocab, RegExVocab
+from dataloader import SELFIEVocab, RegExVocab, CharVocab
 from model import RNN
 
 
@@ -69,6 +69,8 @@ if __name__ == "__main__":
         vocab = SELFIEVocab(vocab_path)
     elif which_vocab == "regex":
         vocab = RegExVocab(vocab_path)
+    elif which_vocab == "char":
+        vocab = CharVocab(vocab_path)
     else:
         raise ValueError("Wrong vacab name for configuration which_vocab!")
 

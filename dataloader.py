@@ -6,11 +6,10 @@ import selfies as sf
 
 from torch.utils.data import Dataset, DataLoader
 from torch.nn.utils.rnn import pad_sequence
-from pad_idx import PADDING_IDX
 
 
 def dataloader_gen(dataset_dir, percentage, which_vocab, vocab_path,
-                   batch_size, shuffle, drop_last=True):
+                   batch_size, PADDING_IDX, shuffle, drop_last=True):
     """
     Genrate the dataloader for training
     """
@@ -25,25 +24,25 @@ def dataloader_gen(dataset_dir, percentage, which_vocab, vocab_path,
 
     dataset = SMILESDataset(dataset_dir, percentage, vocab)
 
+    def pad_collate(batch):
+        """
+        Put the sequences of different lengths in a minibatch by paddding.
+        """
+        lengths = [len(x) for x in batch]
+
+        batch = [torch.tensor(x) for x in batch]
+
+        x_padded = pad_sequence(batch, batch_first=True,
+                                padding_value=PADDING_IDX)
+
+        return x_padded, lengths
+
     dataloader = DataLoader(
         dataset=dataset, batch_size=batch_size, shuffle=shuffle,
         drop_last=drop_last, collate_fn=pad_collate
     )
 
     return dataloader, len(dataset)
-
-
-def pad_collate(batch):
-    """
-    Put the sequences of different lengths in a minibatch by paddding.
-    """
-    lengths = [len(x) for x in batch]
-
-    batch = [torch.tensor(x) for x in batch]
-
-    x_padded = pad_sequence(batch, batch_first=True, padding_value=PADDING_IDX)
-
-    return x_padded, lengths
 
 
 class SMILESDataset(Dataset):

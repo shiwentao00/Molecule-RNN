@@ -3,7 +3,6 @@ import torch
 import torch.nn as nn
 from torch.nn.utils.rnn import pack_padded_sequence
 from torch.nn.functional import softmax
-from pad_idx import PADDING_IDX
 
 
 class RNN(torch.nn.Module):
@@ -13,7 +12,7 @@ class RNN(torch.nn.Module):
         self.embedding_layer = nn.Embedding(
             num_embeddings=rnn_config['num_embeddings'],
             embedding_dim=rnn_config['embedding_dim'],
-            padding_idx=PADDING_IDX
+            padding_idx=rnn_config['num_embeddings'] - 1
         )
 
         if rnn_config['rnn_type'] == 'LSTM':
