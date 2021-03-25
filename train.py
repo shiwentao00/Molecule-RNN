@@ -100,7 +100,11 @@ if __name__ == "__main__":
             # the loss function:
             # https://github.com/yunjey/pytorch-tutorial/blob/master/tutorials/03-advanced/image_captioning/train.py
             targets = pack_padded_sequence(
-                data[:, 1:], lengths, batch_first=True, enforce_sorted=False).data
+                data[:, 1:], 
+                lengths, 
+                batch_first=True, 
+                enforce_sorted=False
+            ).data
 
             loss = loss_function(preds, targets)
             loss.backward()
