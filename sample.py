@@ -64,7 +64,7 @@ if __name__ == "__main__":
 
     for _ in range(num_batches):
         # sample molecules as integers
-        sampled_ints = model.sample_gpu(
+        sampled_ints = model.sample(
             batch_size=batch_size,
             vocab=vocab, 
             device=device

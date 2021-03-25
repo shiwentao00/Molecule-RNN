@@ -17,8 +17,8 @@ def get_args():
 if __name__ == "__main__":
     args = get_args()
     result_dir = args.result_dir
-    smiles_dir = result_dir + "sampled_molecules.out"
-    output_path = result_dir + "valid_smiles.smi"
+    smiles_dir = result_dir + "sampled_molecules_gpu.out"
+    output_path = result_dir + "valid_smiles_gpu.smi"
 
     # read SMILES
     with open(smiles_dir, "r") as f:
