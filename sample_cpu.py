@@ -2,6 +2,8 @@
 import argparse
 import torch
 import yaml
+import selfies as sf
+import multiprocessing as mp
 from dataloader import SELFIEVocab, RegExVocab, CharVocab
 from model import RNN
 
@@ -13,25 +15,45 @@ def get_args():
                         help="directory of result files including configuration, \
                          loss, trained model, and sampled molecules"
                         )
-    parser.add_argument("-batch_size",
+    parser.add_argument("-num_samples",
                         required=False,
-                        default=1024,
-                        help="number of samples to generate per mini-batch"
+                        default=1,
+                        help="number of samples to generate per process"
                         )
-    parser.add_argument("-num_batches",
+    parser.add_argument("-num_procs",
                         required=False,
-                        default=10,
-                        help="number of batches to generate"
+                        default=1,
+                        help="number of processes to use"
                         )
     return parser.parse_args()
+
+
+def sample(num_samples):
+    """
+    Returns a list of sampled SMILES.
+    """
+    # using process id as random seed of pytorch, such
+    # that different processes sample different molecules
+    torch.manual_seed(mp.current_process()._identity[0])
+
+    res = []
+    for _ in range(num_samples):
+        mol = model.sample_cpu(vocab)
+
+        if vocab.name == "selfies":
+            mol = sf.decoder(mol)
+
+        res.append(mol + "\n")
+
+    return res
+
 
 if __name__ == "__main__":
     args = get_args()
     result_dir = args.result_dir
-    batch_size = args.batch_size
-    num_batches = args.num_batches
 
     # load the configuartion file in output
+    # config_dir = "../results/run_1/config.yaml"
     config_dir = result_dir + "config.yaml"
     with open(config_dir, 'r') as f:
         config = yaml.full_load(f)
@@ -57,31 +79,20 @@ if __name__ == "__main__":
     model = RNN(rnn_config).to(device)
     model.load_state_dict(torch.load(
         config['out_dir'] + 'trained_model.pt',
-        map_location=torch.device(device)))
+        map_location=torch.device('cpu')))
     model.eval()
 
-    out_file = open(result_dir + "sampled_molecules_gpu.out", "w")
+    # initiate multiple processes to sample
+    num_samples = int(args.num_samples)
+    num_procs = int(args.num_procs)
+    print("creating {} processes, each process sampling {} molecules.".format(
+        num_procs, num_samples))
+    with mp.Pool(num_procs) as p:
+        smiles = p.map(sample, [num_samples] * num_procs)
 
-    for _ in range(num_batches):
-        # sample molecules as integers
-        sampled_ints = model.sample_gpu(
-            batch_size=batch_size,
-            vocab=vocab, 
-            device=device
-        )
-
-        # convert integers back to SMILES
-        molecules = []
-        sampled_ints = sampled_ints.tolist()
-        for ints in sampled_ints:
-            molecule = []
-            for x in ints:
-                if vocab.int2tocken[x] == '<eos>':
-                    break
-                else:
-                    molecule.append(vocab.int2tocken[x])
-            molecules.append("".join(molecule))
-
-        # save the sampled SMILES to output file
-        for mol in molecules:
-            out_file.write(mol + '\n')
+    # wrtite results to file
+    out_file = open(result_dir + "sampled_molecules.out", "w")
+    for smiles_list in smiles:
+        for mol in smiles_list:
+            out_file.write(mol)
+    out_file.close

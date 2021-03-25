@@ -1,6 +1,7 @@
 # Copyright: Wentao Shi, 2021
 import torch
 import re
+from torch._C import dtype
 import yaml
 import selfies as sf
 
@@ -30,16 +31,23 @@ def dataloader_gen(dataset_dir, percentage, which_vocab, vocab_path,
         """
         lengths = [len(x) for x in batch]
 
-        batch = [torch.tensor(x) for x in batch]
+        # embedding layer takes long tensors
+        batch = [torch.tensor(x, dtype=torch.long) for x in batch]
 
-        x_padded = pad_sequence(batch, batch_first=True,
-                                padding_value=PADDING_IDX)
+        x_padded = pad_sequence(
+            batch, 
+            batch_first=True,
+            padding_value=PADDING_IDX
+        )
 
         return x_padded, lengths
 
     dataloader = DataLoader(
-        dataset=dataset, batch_size=batch_size, shuffle=shuffle,
-        drop_last=drop_last, collate_fn=pad_collate
+        dataset=dataset, 
+        batch_size=batch_size, 
+        shuffle=shuffle,
+        drop_last=drop_last, 
+        collate_fn=pad_collate
     )
 
     return dataloader, len(dataset)
