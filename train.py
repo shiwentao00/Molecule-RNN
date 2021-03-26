@@ -36,7 +36,7 @@ if __name__ == "__main__":
     # create dataloader
     batch_size = config['batch_size']
     shuffle = config['shuffle']
-    PADDING_IDX = config['rnn_config']['num_embeddings'] - 1
+    PADDING_IDX = config['rnn_config']['num_embeddings'] - 2
     num_workers = os.cpu_count()
     print('number of workers to load data: ', num_workers)
     print('which vocabulary to use: ', which_vocab)
@@ -84,27 +84,18 @@ if __name__ == "__main__":
     model.train()
     for epoch in range(1, 1 + num_epoch):
         train_loss = 0
-        for data, lengths in dataloader:
-            # the lengths are decreased by 1 because we don't
-            # use <eos> for input and we don't need <sos> for
-            # output during traning.
-            lengths = [length - 1 for length in lengths]
-
+        for data, _ in dataloader:
             optimizer.zero_grad()
             data = data.to(device)
-            preds = model(data, lengths)
-            # The <sos> token is removed before packing, because
-            # we don't need <sos> of output during training.
-            # the image_captioning project uses the same method
-            # which directly feeds the packed sequences to
-            # the loss function:
-            # https://github.com/yunjey/pytorch-tutorial/blob/master/tutorials/03-advanced/image_captioning/train.py
-            targets = pack_padded_sequence(
-                data[:, 1:], 
-                lengths, 
-                batch_first=True, 
-                enforce_sorted=False
-            ).data
+            preds = model(data)
+
+            # remove <sos> for targets
+            targets = data[:, 1:]
+
+            preds = preds.contiguous().view(-1, preds.size(-1))
+            targets = targets.contiguous().view(-1)
+            print(preds.size())
+            print(targets.size())
 
             loss = loss_function(preds, targets)
             loss.backward()

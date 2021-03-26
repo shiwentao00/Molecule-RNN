@@ -1,7 +1,6 @@
 # Copyright: Wentao Shi, 2021
 import torch
 import re
-from torch._C import dtype
 import yaml
 import selfies as sf
 

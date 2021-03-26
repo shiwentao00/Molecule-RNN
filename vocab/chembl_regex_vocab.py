@@ -58,10 +58,12 @@ if __name__ == "__main__":
 
     i += 1
     vocab_dict['<eos>'] = i
-    i += 1
-    vocab_dict['<sos>'] = i
+
     i += 1
     vocab_dict['<pad>'] = i
+
+    i += 1
+    vocab_dict['<sos>'] = i
 
     with open(output_vocab, 'w') as f:
         yaml.dump(vocab_dict, f)

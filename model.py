@@ -1,6 +1,5 @@
 # Copyright: Wentao Shi, 2021
 import torch
-from torch._C import dtype
 import torch.nn as nn
 from torch.nn.utils.rnn import pack_padded_sequence
 from torch.nn.functional import softmax
@@ -13,7 +12,7 @@ class RNN(torch.nn.Module):
         self.embedding_layer = nn.Embedding(
             num_embeddings=rnn_config['num_embeddings'],
             embedding_dim=rnn_config['embedding_dim'],
-            padding_idx=rnn_config['num_embeddings'] - 1
+            padding_idx=rnn_config['num_embeddings'] - 2
         )
 
         if rnn_config['rnn_type'] == 'LSTM':
@@ -37,36 +36,26 @@ class RNN(torch.nn.Module):
                 "rnn_type should be either 'LSTM' or 'GRU'."
             )
 
-        # output does not include <sos> and <pad>, so
-        # decrease the num_embeddings by 2
+        # output does not include <sos>, so
+        # decrease the num_embeddings by 1
         self.linear = nn.Linear(
-            rnn_config['hidden_size'], rnn_config['num_embeddings'] - 2)
+            rnn_config['hidden_size'], rnn_config['num_embeddings'] - 1)
 
-    def forward(self, data, lengths):
-        embeddings = self.embedding_layer(data)
+    def forward(self, x):
+        # remove last tokens which are <eos> or <pad>
+        x = x[:, 0:-1]
 
-        # pack the padded input
-        # the lengths are decreased by 1 because we don't
-        # use <eos> for input and we don't need <sos> for
-        # output during traning.
-        embeddings = pack_padded_sequence(
-            input=embeddings, 
-            lengths=lengths, 
-            batch_first=True, 
-            enforce_sorted=False
-        )
+        x = self.embedding_layer(x)
 
         # recurrent network, discard (h_n, c_n) in output.
         # Tearcher-forcing is used here, so we directly feed
         # the whole sequence to model.
-        embeddings, _ = self.rnn(embeddings)
+        x, _ = self.rnn(x)
 
         # linear layer to generate input of softmax
-        embeddings = self.linear(embeddings.data)
+        x = self.linear(x)
 
-        # return the packed representation for backpropagation,
-        # the targets will also be packed.
-        return embeddings
+        return x
 
     def sample(self, batch_size, vocab, device, max_length=140):
         """Use this function if device is GPU"""
