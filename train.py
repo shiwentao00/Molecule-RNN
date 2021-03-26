@@ -94,8 +94,6 @@ if __name__ == "__main__":
 
             preds = preds.contiguous().view(-1, preds.size(-1))
             targets = targets.contiguous().view(-1)
-            print(preds.size())
-            print(targets.size())
 
             loss = loss_function(preds, targets)
             loss.backward()
