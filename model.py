@@ -93,7 +93,7 @@ class RNN(torch.nn.Module):
             x = self.linear(x)
             x = softmax(x, dim=-1)
             x = torch.multinomial(x.squeeze(), 1)
-            
+
             output.append(x)
 
             # terminate if <eos> is found for every data
@@ -101,6 +101,8 @@ class RNN(torch.nn.Module):
             finish = torch.logical_or(finish, eos_sampled.squeeze())
             if torch.all(finish):
                 return torch.cat(output, -1)
+        
+        return torch.cat(output, -1)
 
     def sample_cpu(self, vocab):
         """Use this function if device is CPU"""
