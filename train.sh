@@ -8,3 +8,6 @@
 cd /work/derick/molecule-generator-project/Molecule-RNN/
 
 singularity exec --nv -B /work,/project,/usr/lib64 /work/derick/singularities/pytorch-and-others.simg python train.py
+
+singularity exec --nv -B /work,/project,/usr/lib64 /work/derick/singularities/pytorch-and-others.simg python sample.py
+

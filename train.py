@@ -3,7 +3,6 @@ import yaml
 import os
 import torch
 import torch.nn as nn
-from torch.nn.utils.rnn import pack_padded_sequence
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from dataloader import dataloader_gen
 from model import RNN
@@ -72,7 +71,7 @@ if __name__ == "__main__":
     scheduler = ReduceLROnPlateau(
         optimizer, mode='min',
         factor=0.5, patience=10,
-        cooldown=30, min_lr=0.0001,
+        cooldown=15, min_lr=0.0001,
         verbose=True
     )
 

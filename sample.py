@@ -9,7 +9,8 @@ from model import RNN
 def get_args():
     parser = argparse.ArgumentParser("python")
     parser.add_argument("-result_dir",
-                        required=True,
+                        required=False,
+                        default="undefined",
                         help="directory of result files including configuration, \
                          loss, trained model, and sampled molecules"
                         )
@@ -30,6 +31,13 @@ if __name__ == "__main__":
     result_dir = args.result_dir
     batch_size = args.batch_size
     num_batches = args.num_batches
+
+    # default result directory is the same as current training output
+    if result_dir == "undefined":
+        config_dir = "./train.yaml"
+        with open(config_dir, 'r') as f:
+            config = yaml.full_load(f)
+        result_dir = config["out_dir"]
 
     # load the configuartion file in output
     config_dir = result_dir + "config.yaml"

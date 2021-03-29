@@ -1,7 +1,6 @@
 # Copyright: Wentao Shi, 2021
 import torch
 import torch.nn as nn
-from torch.nn.utils.rnn import pack_padded_sequence
 from torch.nn.functional import softmax
 
 
@@ -10,9 +9,9 @@ class RNN(torch.nn.Module):
         super(RNN, self).__init__()
 
         self.embedding_layer = nn.Embedding(
+            # padding_idx=rnn_config['num_embeddings'] - 2,
             num_embeddings=rnn_config['num_embeddings'],
-            embedding_dim=rnn_config['embedding_dim'],
-            padding_idx=rnn_config['num_embeddings'] - 2
+            embedding_dim=rnn_config['embedding_dim']
         )
 
         if rnn_config['rnn_type'] == 'LSTM':
@@ -39,7 +38,9 @@ class RNN(torch.nn.Module):
         # output does not include <sos>, so
         # decrease the num_embeddings by 1
         self.linear = nn.Linear(
-            rnn_config['hidden_size'], rnn_config['num_embeddings'] - 1)
+            rnn_config['hidden_size'], 
+            rnn_config['num_embeddings'] - 1
+        )
 
     def forward(self, x):
         # remove last tokens which are <eos> or <pad>
@@ -88,19 +89,18 @@ class RNN(torch.nn.Module):
         for _ in range(max_length):
             # forward
             x = self.embedding_layer(x)
-            #print(x.size())
             x, hidden = self.rnn(x, hidden)
             x = self.linear(x)
             x = softmax(x, dim=-1)
             x = torch.multinomial(x.squeeze(), 1)
+            
             output.append(x)
 
             # terminate if <eos> is found for every data
             eos_sampled = (x == vocab.vocab['<eos>']).data
             finish = torch.logical_or(finish, eos_sampled.squeeze())
-            if torch.all(finish): break
-
-        return torch.cat(output, -1)
+            if torch.all(finish):
+                return torch.cat(output, -1)
 
     def sample_cpu(self, vocab):
         """Use this function if device is CPU"""
