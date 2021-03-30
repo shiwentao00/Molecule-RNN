@@ -8,22 +8,25 @@ from model import RNN
 
 def get_args():
     parser = argparse.ArgumentParser("python")
-    parser.add_argument("-result_dir",
-                        required=False,
-                        default="undefined",
-                        help="directory of result files including configuration, \
-                         loss, trained model, and sampled molecules"
-                        )
-    parser.add_argument("-batch_size",
-                        required=False,
-                        default=1024,
-                        help="number of samples to generate per mini-batch"
-                        )
-    parser.add_argument("-num_batches",
-                        required=False,
-                        default=10,
-                        help="number of batches to generate"
-                        )
+    parser.add_argument(
+        "-result_dir",
+        required=False,
+        default="undefined",
+        help="directory of result files including configuration, \
+              loss, trained model, and sampled molecules"
+    )
+    parser.add_argument(
+        "-batch_size",
+        required=False,
+        default=1024,
+        help="number of samples to generate per mini-batch"
+    )
+    parser.add_argument(
+        "-num_batches",
+        required=False,
+        default=10,
+        help="number of batches to generate"
+    )
     return parser.parse_args()
 
 if __name__ == "__main__":
