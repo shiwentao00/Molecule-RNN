@@ -9,7 +9,9 @@ from model import RNN
 
 if __name__ == "__main__":
     # detect cpu or gpu
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device(
+        'cuda' if torch.cuda.is_available() else 'cpu'
+    )
     print('device: ', device)
 
     config_dir = "./train.yaml"
@@ -65,7 +67,8 @@ if __name__ == "__main__":
         )
     else:
         raise ValueError(
-            "Wrong value for optimizers! select between 'adam' and 'sgd'.")
+            "Wrong value for optimizers! select between 'adam' and 'sgd'."
+        )
 
     # learning rate scheduler
     scheduler = ReduceLROnPlateau(
@@ -104,7 +107,9 @@ if __name__ == "__main__":
 
         train_losses.append(train_loss / train_size)
 
-        print('epoch {}, train loss: {}.'.format(epoch, train_losses[-1]))
+        print('epoch {}, train loss: {}.'.format(
+            epoch, train_losses[-1]
+        ))
 
         # update the saved model upon best validation loss
         if train_losses[-1] <= best_train_loss:
