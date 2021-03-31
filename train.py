@@ -50,7 +50,7 @@ if __name__ == "__main__":
     model = RNN(rnn_config).to(device)
     learning_rate = config['learning_rate']
     weight_decay = config['weight_decay']
-    loss_function = nn.CrossEntropyLoss(reduction='mean')
+    loss_function = nn.CrossEntropyLoss(reduction='sum')
 
     # create optimizer
     if config['which_optimizer'] == "adam":
