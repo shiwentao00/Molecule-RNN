@@ -56,7 +56,7 @@ if __name__ == "__main__":
     if config['which_optimizer'] == "adam":
         optimizer = torch.optim.Adam(
             model.parameters(), lr=learning_rate,
-            weight_decay=weight_decay, amsgrad=True
+            weight_decay=weight_decay, # amsgrad=True
         )
     elif config['which_optimizer'] == "sgd":
         optimizer = torch.optim.SGD(
