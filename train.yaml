@@ -22,4 +22,4 @@
  num_epoch: 20
  which_optimizer: adam
  learning_rate: 0.01
- weight_decay: 0.0005
+ weight_decay: 0.0001
