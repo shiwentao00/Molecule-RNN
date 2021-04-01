@@ -12,6 +12,9 @@ from dataloader import dataloader_gen
 from dataloader import SELFIEVocab, RegExVocab, CharVocab
 from model import RNN
 
+# suppress rdkit error
+from rdkit import rdBase
+rdBase.DisableLog('rdApp.error')
 
 def make_vocab(config):
     # load vocab
