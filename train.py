@@ -148,7 +148,7 @@ if __name__ == "__main__":
     best_train_loss, best_train_epoch = float('inf'), None
     num_epoch = config['num_epoch']
 
-    
+    print('begin training...')
     for epoch in range(1, 1 + num_epoch):
         model.train()
         train_loss = 0
