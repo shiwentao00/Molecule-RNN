@@ -18,7 +18,8 @@ rdBase.DisableLog('rdApp.error')
 
 def make_vocab(config):
     # load vocab
-    which_vocab, vocab_path = config["which_vocab"], config["vocab_path"]
+    which_vocab = config["which_vocab"], 
+    vocab_path = config["vocab_path"]
 
     if which_vocab == "selfies":
         return SELFIEVocab(vocab_path)
@@ -27,7 +28,9 @@ def make_vocab(config):
     elif which_vocab == "char":
         return CharVocab(vocab_path)
     else:
-        raise ValueError("Wrong vacab name for configuration which_vocab!")
+        raise ValueError(
+            "Wrong vacab name for configuration which_vocab!"
+        )
 
 
 def sample(model, vocab, batch_size):
@@ -132,7 +135,7 @@ if __name__ == "__main__":
         )
     else:
         raise ValueError(
-            "Wrong value for optimizers! select between 'adam' and 'sgd'."
+            "Wrong optimizer! Select between 'adam' and 'sgd'."
         )
 
     # learning rate scheduler
@@ -164,6 +167,7 @@ if __name__ == "__main__":
             optimizer.zero_grad()
             data = data.to(device)
             preds = model(data, lengths)
+            
             # The <sos> token is removed before packing, because
             # we don't need <sos> of output during training.
             # the image_captioning project uses the same method
