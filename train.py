@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 from torch.nn.utils.rnn import pack_padded_sequence
 from torch.optim.lr_scheduler import ReduceLROnPlateau
+from tqdm import tqdm
 from rdkit import Chem
 
 from dataloader import dataloader_gen
@@ -151,7 +152,7 @@ if __name__ == "__main__":
     for epoch in range(1, 1 + num_epoch):
         model.train()
         train_loss = 0
-        for data, lengths in dataloader:
+        for data, lengths in tqdm(dataloader):
             # the lengths are decreased by 1 because we don't
             # use <eos> for input and we don't need <sos> for
             # output during traning.
