@@ -18,9 +18,9 @@ rdBase.DisableLog('rdApp.error')
 
 def make_vocab(config):
     # load vocab
-    which_vocab = config["which_vocab"], 
+    which_vocab = config["which_vocab"]
     vocab_path = config["vocab_path"]
-
+    
     if which_vocab == "selfies":
         return SELFIEVocab(vocab_path)
     elif which_vocab == "regex":
