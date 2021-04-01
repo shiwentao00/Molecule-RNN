@@ -7,6 +7,7 @@ from torch.nn.utils.rnn import pack_padded_sequence
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from tqdm import tqdm
 from rdkit import Chem
+import selfies as sf
 
 from dataloader import dataloader_gen
 from dataloader import SELFIEVocab, RegExVocab, CharVocab
@@ -54,6 +55,10 @@ def sample(model, vocab, batch_size):
             else:
                 molecule.append(vocab.int2tocken[x])
         molecules.append("".join(molecule))
+
+    # convert SELFIES back to SMILES
+    if vocab.name == 'selfies':
+        molecules = [sf.decoder(x) for x in molecules]
     
     return molecules
 
