@@ -1,13 +1,14 @@
 ---
- out_dir: '../results/run_31/'
+ out_dir: '../results/run_32/'
  dataset_dir: "../chembl-data/chembl_28/chembl_28_sqlite/chembl28-cleaned.smi" 
- which_vocab: "char" # "selfies", "regex", or "char"
- vocab_path: "./vocab/chembl_char_vocab.yaml"
+ which_vocab: "selfies" # "selfies", "regex", or "char"
+ vocab_path: "./vocab/chembl_selfies_vocab.yaml"
  percentage: 1
 
  rnn_config:
-  # embedding
-  num_embeddings: 47 # size of vocab + <eos> + <sos> + <pad>. char: 47, regex:75
+  # size of vocab + <eos> + <sos> + <pad> 
+  # char: 47, regex:75, selfies:77
+  num_embeddings: 77 
   embedding_dim: 128
   rnn_type: "GRU" # LSTM or GRU
 
