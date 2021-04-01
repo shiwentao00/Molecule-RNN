@@ -40,7 +40,8 @@ class RNN(torch.nn.Module):
         # output does not include <sos> and <pad>, so
         # decrease the num_embeddings by 2
         self.linear = nn.Linear(
-            rnn_config['hidden_size'], rnn_config['num_embeddings'] - 2)
+            rnn_config['hidden_size'], rnn_config['num_embeddings'] - 2
+        )
 
     def forward(self, data, lengths):
         embeddings = self.embedding_layer(data)
@@ -97,19 +98,21 @@ class RNN(torch.nn.Module):
         # sample until every sequence in the mini-batch
         # has <eos> token
         for _ in range(max_length):
-            # forward
+            # forward rnn
             x = self.embedding_layer(x)
-            #print(x.size())
             x, hidden = self.rnn(x, hidden)
             x = self.linear(x)
             x = softmax(x, dim=-1)
+            
+            # sample
             x = torch.multinomial(x.squeeze(), 1)
             output.append(x)
 
             # terminate if <eos> is found for every data
             eos_sampled = (x == vocab.vocab['<eos>']).data
             finish = torch.logical_or(finish, eos_sampled.squeeze())
-            if torch.all(finish): break
+            if torch.all(finish):
+                return torch.cat(output, -1)
 
         return torch.cat(output, -1)
 

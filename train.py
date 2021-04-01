@@ -5,12 +5,71 @@ import torch
 import torch.nn as nn
 from torch.nn.utils.rnn import pack_padded_sequence
 from torch.optim.lr_scheduler import ReduceLROnPlateau
+from rdkit import Chem
+
 from dataloader import dataloader_gen
+from dataloader import SELFIEVocab, RegExVocab, CharVocab
 from model import RNN
+
+
+def make_vocab(config):
+    # load vocab
+    which_vocab, vocab_path = config["which_vocab"], config["vocab_path"]
+
+    if which_vocab == "selfies":
+        return SELFIEVocab(vocab_path)
+    elif which_vocab == "regex":
+        return RegExVocab(vocab_path)
+    elif which_vocab == "char":
+        return CharVocab(vocab_path)
+    else:
+        raise ValueError("Wrong vacab name for configuration which_vocab!")
+
+
+def sample(model, vocab, batch_size):
+    """Sample a batch of SMILES from current model."""
+    model.eval()
+    # sample
+    sampled_ints = model.sample(
+            batch_size=batch_size,
+            vocab=vocab,
+            device=device
+    )
+
+    # convert integers back to SMILES
+    molecules = []
+    sampled_ints = sampled_ints.tolist()
+    for ints in sampled_ints:
+        molecule = []
+        for x in ints:
+            if vocab.int2tocken[x] == '<eos>':
+                break
+            else:
+                molecule.append(vocab.int2tocken[x])
+        molecules.append("".join(molecule))
+    
+    return molecules
+
+
+def compute_valid_rate(molecules):
+    """compute the percentage of valid SMILES given
+    a list SMILES strings"""
+    num_valid, num_invalid = 0, 0
+    for mol in molecules:
+        mol = Chem.MolFromSmiles(mol)
+        if mol is None:
+             num_invalid += 1
+        else:
+             num_valid += 1
+    
+    return num_valid, num_invalid
+
 
 if __name__ == "__main__":
     # detect cpu or gpu
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device(
+        'cuda' if torch.cuda.is_available() else 'cpu'
+    )
     print('device: ', device)
 
     config_dir = "./train.yaml"
@@ -51,7 +110,10 @@ if __name__ == "__main__":
     model = RNN(rnn_config).to(device)
     learning_rate = config['learning_rate']
     weight_decay = config['weight_decay']
-    loss_function = nn.CrossEntropyLoss(reduction='mean')
+
+    # Making reduction="sum" makes huge difference
+    # in valid rate of sampled molecules.
+    loss_function = nn.CrossEntropyLoss(reduction='sum')
 
     # create optimizer
     if config['which_optimizer'] == "adam":
@@ -66,23 +128,28 @@ if __name__ == "__main__":
         )
     else:
         raise ValueError(
-            "Wrong value for optimizers! select between 'adam' and 'sgd'.")
+            "Wrong value for optimizers! select between 'adam' and 'sgd'."
+        )
 
     # learning rate scheduler
     scheduler = ReduceLROnPlateau(
         optimizer, mode='min',
-        factor=0.5, patience=10,
-        cooldown=30, min_lr=0.0001,
+        factor=0.5, patience=5,
+        cooldown=10, min_lr=0.0001,
         verbose=True
     )
+
+    # vocabulary object used by the sample() function
+    vocab = make_vocab(config)
 
     # train and validation, the results are saved.
     train_losses = []
     best_train_loss, best_train_epoch = float('inf'), None
     num_epoch = config['num_epoch']
 
-    model.train()
+    
     for epoch in range(1, 1 + num_epoch):
+        model.train()
         train_loss = 0
         for data, lengths in dataloader:
             # the lengths are decreased by 1 because we don't
@@ -125,6 +192,13 @@ if __name__ == "__main__":
             torch.save(model.state_dict(), trained_model_dir)
 
         scheduler.step(train_losses[-1])
+
+        # sample 1024 SMILES each epoch
+        sampled_molecules = sample(model, vocab, batch_size=1024)
+
+        # print the valid rate each epoch
+        num_valid, num_invalid = compute_valid_rate(sampled_molecules)
+        print('valid rate: {}'.format(num_valid / (num_valid + num_invalid)))
 
     # save train and validation losses
     with open(out_dir + 'loss.yaml', 'w') as f:
