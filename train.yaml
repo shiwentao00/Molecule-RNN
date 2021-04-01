@@ -7,7 +7,7 @@
 
  rnn_config:
   # embedding
-  num_embeddings: 75 # size of vocab + <eos> + <sos> + <pad>. char: 47, regex:75
+  num_embeddings: 47 # size of vocab + <eos> + <sos> + <pad>. char: 47, regex:75
   embedding_dim: 128
   rnn_type: "GRU" # LSTM or GRU
 
