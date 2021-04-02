@@ -30,7 +30,7 @@ The default setting yields over 80% valid rate for character-level tokenization 
 python filter_sampled.py -result_dir your_output_dir
 ```
 
-Here are examples some sampled molecules:
+Here are examples of some sampled molecules:
 
 <p align="center">
     <img width="250" height="400" src="figure/sampled.png">
