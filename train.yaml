@@ -1,6 +1,6 @@
 ---
  out_dir: '../results/run_32/'
- dataset_dir: "../chembl-data/chembl_28/chembl_28_sqlite/chembl28-cleaned.smi" 
+ dataset_dir: "./dataset/chembl28-cleaned.smi" 
  which_vocab: "selfies" # "selfies", "regex", or "char"
  vocab_path: "./vocab/chembl_selfies_vocab.yaml"
  percentage: 1
