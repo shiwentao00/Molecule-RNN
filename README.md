@@ -25,10 +25,15 @@ The trained model will be saved in the ```out_dir``` directory. We can generate 
 python sample.py -result_dir your_output_dir
 ```
 
-The default setting yields over 80% valid rate for character-level tokenization and regex-based tokenization, and it gives 99.9% valida rate for SELFIES tokenization. Here are some sampled molecules:
+The default setting yields over 80% valid rate for character-level tokenization and regex-based tokenization, and it gives 99.9% valida rate for SELFIES tokenization. After the sampling, we can filter out the invalid SMILES:
+```
+python filter_sampled.py -result_dir your_output_dir
+```
+
+Here are examples some sampled molecules:
 
 <p align="center">
-<img width="250" height="100" src="figure/sampled_mol.png">
+    <img width="150" height="400" src="figure/sampled.png">
 </p>   
 
 
