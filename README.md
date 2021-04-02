@@ -36,5 +36,5 @@ Here are examples of some sampled molecules:
     <img width="250" height="400" src="figure/sampled.png">
 </p>   
 
-
-
+## TODOs
+Currently beam search sampling is not supported given the lenghts of the sequences. Feel free to make a PR or write an issue if you have any idea to search for molecules with high probabilities. :)   
