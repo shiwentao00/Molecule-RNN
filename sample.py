@@ -3,6 +3,8 @@ import argparse
 import torch
 import yaml
 from tqdm import tqdm
+import selfies as sf
+
 from dataloader import SELFIEVocab, RegExVocab, CharVocab
 from model import RNN
 
@@ -82,6 +84,10 @@ if __name__ == "__main__":
                 else:
                     molecule.append(vocab.int2tocken[x])
             molecules.append("".join(molecule))
+
+        # convert SELFIES back to SMILES
+        if vocab.name == 'selfies':
+            molecules = [sf.decoder(x) for x in molecules]
 
         # save the sampled SMILES to output file
         for mol in molecules:
