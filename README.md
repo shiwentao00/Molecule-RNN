@@ -25,7 +25,7 @@ The trained model will be saved in the ```out_dir``` directory. We can generate 
 python sample.py -result_dir your_output_dir
 ```
 
-The default setting yields over 80% valid rate for character-level tokenization and regex-based tokenization, and it gives 99.9% valida rate for SELFIES tokenization. After the sampling, we can filter out the invalid SMILES:
+The default setting yields over 80% valid rate for character-level tokenization and regex-based tokenization, and it gives 99.9% valid rate for SELFIES tokenization. After the sampling, we can filter out the invalid SMILES:
 ```
 python filter_sampled.py -result_dir your_output_dir
 ```
