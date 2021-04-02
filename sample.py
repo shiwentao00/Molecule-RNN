@@ -2,6 +2,7 @@
 import argparse
 import torch
 import yaml
+from tqdm import tqdm
 from dataloader import SELFIEVocab, RegExVocab, CharVocab
 from model import RNN
 
@@ -62,7 +63,7 @@ if __name__ == "__main__":
 
     out_file = open(result_dir + "sampled_molecules.out", "w")
 
-    for _ in range(num_batches):
+    for _ in tqdm(range(num_batches)):
         # sample molecules as integers
         sampled_ints = model.sample(
             batch_size=batch_size,
