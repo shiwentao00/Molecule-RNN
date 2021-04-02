@@ -60,7 +60,7 @@ if __name__ == "__main__":
         map_location=torch.device(device)))
     model.eval()
 
-    out_file = open(result_dir + "sampled_molecules_gpu.out", "w")
+    out_file = open(result_dir + "sampled_molecules.out", "w")
 
     for _ in range(num_batches):
         # sample molecules as integers
