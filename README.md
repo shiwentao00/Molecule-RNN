@@ -33,7 +33,7 @@ python filter_sampled.py -result_dir your_output_dir
 Here are examples some sampled molecules:
 
 <p align="center">
-    <img width="150" height="400" src="figure/sampled.png">
+    <img width="200" height="400" src="figure/sampled.png">
 </p>   
 
 
