@@ -2,6 +2,9 @@
 import argparse
 from rdkit import Chem
 
+# suppress rdkit error
+from rdkit import rdBase
+rdBase.DisableLog('rdApp.error')
 
 def get_args():
     parser = argparse.ArgumentParser("python")
