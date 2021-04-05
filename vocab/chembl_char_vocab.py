@@ -37,7 +37,7 @@ def tokenize(smiles, tokens):
             tokenized.append(c1)
             i += 1
             continue
-        
+
         raise ValueError(
             "Unrecognized charater in SMILES: {}, {}".format(c1, c2))
 
@@ -60,10 +60,10 @@ if __name__ == "__main__":
         'Al', 'As', 'B', 'Br', 'C', 'Cl', 'F', 'H', 'I', 'K', 'Li', 'N',
         'Na', 'O', 'P', 'S', 'Se', 'Si', 'Te'
     ]
-    
+
     special = [
         '(', ')', '[', ']', '=', '#', '%', '0', '1', '2', '3', '4', '5',
-        '6', '7', '8', '9', '+', '-', 'se', 'te', 'c', 'n', 'o', 's'
+        '6', '7', '8', '9', '+', '-', 'se', 'te', 'c', 'n', 'o', 'p', 's'
     ]
 
     tokens = atoms + special
@@ -74,7 +74,7 @@ if __name__ == "__main__":
     data_tokens = []
     [data_tokens.extend(tokenize(x, tokens)) for x in tqdm(smiles)]
     data_tokens = set(data_tokens)
-    
+
     print("validating token set from dataset...")
     assert(data_tokens.issubset(tokens))
     print("OK")
