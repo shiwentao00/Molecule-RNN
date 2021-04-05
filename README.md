@@ -8,7 +8,7 @@ There are different ways to tokenize SMILES, 3 of them are implemented in this p
 3. SELFIES tokenization. SELFIES stands for Self-Referencing Embedded Strings, it is a 100% robust molecular string representation. See details [here](https://github.com/aspuru-guzik-group/selfies).
 
 ## Dataset
-The chembl28 dataset is used. It is under ```./dataset```
+The chembl28 dataset is used. It is under ```./dataset```.
 
 ## Training
 1. Set the ```out_dir``` in ```train.yaml``` as the directory where you want to store output results.
@@ -36,5 +36,5 @@ Here are examples of some sampled molecules:
     <img width="250" height="400" src="figure/sampled.png">
 </p>   
 
-
-
+## TODOs
+Currently beam search sampling is not supported given the lenghts of the sequences. Feel free to make a PR or write an issue if you have any idea to search for molecules with high probabilities. :)   
