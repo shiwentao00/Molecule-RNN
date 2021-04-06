@@ -157,7 +157,7 @@ if __name__ == "__main__":
 
     # train and validation, the results are saved.
     train_losses = []
-    best_train_loss, best_train_epoch = float('inf'), None
+    best_valid_rate = 0
     num_epoch = config['num_epoch']
 
     print('begin training...')
@@ -198,12 +198,6 @@ if __name__ == "__main__":
 
         print('epoch {}, train loss: {}.'.format(epoch, train_losses[-1]))
 
-        # update the saved model upon best validation loss
-        if train_losses[-1] <= best_train_loss:
-            best_train_epoch = epoch
-            best_train_loss = train_losses[-1]
-            torch.save(model.state_dict(), trained_model_dir)
-
         scheduler.step(train_losses[-1])
 
         # sample 1024 SMILES each epoch
@@ -211,7 +205,13 @@ if __name__ == "__main__":
 
         # print the valid rate each epoch
         num_valid, num_invalid = compute_valid_rate(sampled_molecules)
-        print('valid rate: {}'.format(num_valid / (num_valid + num_invalid)))
+        valid_rate = num_valid / (num_valid + num_invalid)
+
+        print('valid rate: {}'.format(valid_rate))
+
+        # update the saved model upon best validation loss
+        if valid_rate >= best_valid_rate:
+            torch.save(model.state_dict(), trained_model_dir)
 
     # save train and validation losses
     with open(out_dir + 'loss.yaml', 'w') as f:
