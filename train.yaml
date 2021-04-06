@@ -13,7 +13,7 @@
   rnn_type: "GRU" # LSTM or GRU
 
   # rnn
-  input_size: 128 # size of the recurrent neural network
+  input_size: 256 # size of the recurrent neural network
   hidden_size: 512
   num_layers: 3
   dropout: 0

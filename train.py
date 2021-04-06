@@ -17,11 +17,12 @@ from model import RNN
 from rdkit import rdBase
 rdBase.DisableLog('rdApp.error')
 
+
 def make_vocab(config):
     # load vocab
     which_vocab = config["which_vocab"]
     vocab_path = config["vocab_path"]
-    
+
     if which_vocab == "selfies":
         return SELFIEVocab(vocab_path)
     elif which_vocab == "regex":
@@ -39,9 +40,9 @@ def sample(model, vocab, batch_size):
     model.eval()
     # sample
     sampled_ints = model.sample(
-            batch_size=batch_size,
-            vocab=vocab,
-            device=device
+        batch_size=batch_size,
+        vocab=vocab,
+        device=device
     )
 
     # convert integers back to SMILES
@@ -59,7 +60,7 @@ def sample(model, vocab, batch_size):
     # convert SELFIES back to SMILES
     if vocab.name == 'selfies':
         molecules = [sf.decoder(x) for x in molecules]
-    
+
     return molecules
 
 
@@ -70,10 +71,10 @@ def compute_valid_rate(molecules):
     for mol in molecules:
         mol = Chem.MolFromSmiles(mol)
         if mol is None:
-             num_invalid += 1
+            num_invalid += 1
         else:
-             num_valid += 1
-    
+            num_valid += 1
+
     return num_valid, num_invalid
 
 
@@ -172,7 +173,7 @@ if __name__ == "__main__":
             optimizer.zero_grad()
             data = data.to(device)
             preds = model(data, lengths)
-            
+
             # The <sos> token is removed before packing, because
             # we don't need <sos> of output during training.
             # the image_captioning project uses the same method
@@ -180,9 +181,9 @@ if __name__ == "__main__":
             # the loss function:
             # https://github.com/yunjey/pytorch-tutorial/blob/master/tutorials/03-advanced/image_captioning/train.py
             targets = pack_padded_sequence(
-                data[:, 1:], 
-                lengths, 
-                batch_first=True, 
+                data[:, 1:],
+                lengths,
+                batch_first=True,
                 enforce_sorted=False
             ).data
 
@@ -191,8 +192,7 @@ if __name__ == "__main__":
             optimizer.step()
 
             # accumulate loss over mini-batches
-            # last minibatch's size != batch_size
-            train_loss += loss.item() * data.size()[0]
+            train_loss += loss.item()  # * data.size()[0]
 
         train_losses.append(train_loss / train_size)
 
