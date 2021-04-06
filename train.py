@@ -211,6 +211,7 @@ if __name__ == "__main__":
 
         # update the saved model upon best validation loss
         if valid_rate >= best_valid_rate:
+            print('model saved at epoch {}'.format(epoch))
             torch.save(model.state_dict(), trained_model_dir)
 
     # save train and validation losses
