@@ -1,5 +1,5 @@
 ---
- out_dir: '../results/run_33/'
+ out_dir: '../results/run_34/'
  dataset_dir: "./dataset/chembl28-cleaned.smi" 
  which_vocab: "char" # "selfies", "regex", or "char"
  vocab_path: "./vocab/chembl_char_vocab.yaml"
