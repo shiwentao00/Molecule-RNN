@@ -9,7 +9,7 @@
   # size of vocab + <eos> + <sos> + <pad> 
   # char: 48, regex:75, selfies:77
   num_embeddings: 48 
-  embedding_dim: 128
+  embedding_dim: 256
   rnn_type: "GRU" # LSTM or GRU
 
   # rnn
