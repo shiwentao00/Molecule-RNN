@@ -1,12 +1,16 @@
 # Copyright: Wentao Shi, 2021
+from dataloader import SELFIEVocab, RegExVocab, CharVocab
+from model import RNN
 import argparse
 import torch
 import yaml
-from tqdm import tqdm
 import selfies as sf
+from tqdm import tqdm
+from rdkit import Chem
 
-from dataloader import SELFIEVocab, RegExVocab, CharVocab
-from model import RNN
+# suppress rdkit error
+from rdkit import rdBase
+rdBase.DisableLog('rdApp.error')
 
 
 def get_args():
@@ -18,12 +22,12 @@ def get_args():
                         )
     parser.add_argument("-batch_size",
                         required=False,
-                        default=1024,
+                        default=2048,
                         help="number of samples to generate per mini-batch"
                         )
     parser.add_argument("-num_batches",
                         required=False,
-                        default=10,
+                        default=20,
                         help="number of batches to generate"
                         )
     return parser.parse_args()
@@ -64,8 +68,9 @@ if __name__ == "__main__":
         map_location=torch.device(device)))
     model.eval()
 
+    # sample, filter out invalid molecules, and save the valid molecules
     out_file = open(result_dir + "sampled_molecules.out", "w")
-
+    num_valid, num_invalid = 0, 0
     for _ in tqdm(range(num_batches)):
         # sample molecules as integers
         sampled_ints = model.sample(
@@ -90,6 +95,16 @@ if __name__ == "__main__":
         if vocab.name == 'selfies':
             molecules = [sf.decoder(x) for x in molecules]
 
-        # save the sampled SMILES to output file
-        for mol in molecules:
-            out_file.write(mol + '\n')
+        # save the valid sampled SMILES to output file,
+        for smiles in molecules:
+            mol = Chem.MolFromSmiles(smiles)
+            if mol is None:
+                num_invalid += 1
+            else:
+                num_valid += 1
+                out_file.write(smiles + '\n')
+
+    # and compute the valid rate
+    print("sampled {} valid SMILES out of {}, success rate: {}".format(
+        num_valid, num_valid + num_invalid, num_valid / (num_valid + num_invalid))
+    )
