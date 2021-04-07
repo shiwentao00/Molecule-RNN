@@ -28,11 +28,12 @@ def get_args():
                         )
     return parser.parse_args()
 
+
 if __name__ == "__main__":
     args = get_args()
     result_dir = args.result_dir
-    batch_size = args.batch_size
-    num_batches = args.num_batches
+    batch_size = int(args.batch_size)
+    num_batches = int(args.num_batches)
 
     # load the configuartion file in output
     config_dir = result_dir + "config.yaml"
@@ -69,7 +70,7 @@ if __name__ == "__main__":
         # sample molecules as integers
         sampled_ints = model.sample(
             batch_size=batch_size,
-            vocab=vocab, 
+            vocab=vocab,
             device=device
         )
 
