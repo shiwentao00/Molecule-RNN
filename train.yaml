@@ -1,7 +1,7 @@
 ---
- out_dir: '../results/run_34/'
+ out_dir: '../results/run_35/'
  dataset_dir: "./dataset/chembl28-cleaned.smi" 
- which_vocab: "char" # "selfies", "regex", or "char"
+ which_vocab: "selfies" # "selfies", "regex", or "char"
  vocab_path: "./vocab/chembl_char_vocab.yaml"
  percentage: 1
 
