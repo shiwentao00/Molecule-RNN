@@ -1,5 +1,5 @@
 # Molecule-RNN
-Molecule-RNN is a recurrent neural network built with Pytorch to generate molecules for drug discovery. 
+Molecule-RNN is a recurrent neural network built with Pytorch to generate molecules for drug discovery. Basically, it learns the distribution of the training dataset and tries to sample from this distrubtion. So, the output molecules will have similar distributions to the training dataset.
 
 ## Tokenization of SMILES
 There are different ways to tokenize SMILES, 3 of them are implemented in this project:
@@ -31,4 +31,5 @@ The default setting yields over 80% valid rate for character-level tokenization 
 </p>   
 
 ## TODOs
-Currently beam search sampling is not supported given the lenghts of the sequences. Feel free to make a PR or write an issue if you have any idea to search for molecules with high probabilities. :)   
+1. Currently beam search sampling is not supported given the lenghts of the sequences. Feel free to make a PR or write an issue if you have any idea to search for molecules with high probabilities. :)   
+2. Introduce reinforcement learning, which can make the model prefer some chemical or spatial properties.
