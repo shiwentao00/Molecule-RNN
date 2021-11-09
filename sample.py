@@ -97,12 +97,16 @@ if __name__ == "__main__":
 
         # save the valid sampled SMILES to output file,
         for smiles in molecules:
-            mol = Chem.MolFromSmiles(smiles)
-            if mol is None:
-                num_invalid += 1
-            else:
+            try:
+                mol = Chem.MolFromSmiles(smiles)
+                if mol is None:
+                    num_invalid += 1
+                else:
+                    num_valid += 1
+                    out_file.write(smiles + '\n')
+            except:
                 num_valid += 1
-                out_file.write(smiles + '\n')
+                pass
 
     # and compute the valid rate
     print("sampled {} valid SMILES out of {}, success rate: {}".format(
