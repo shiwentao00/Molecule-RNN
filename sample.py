@@ -71,7 +71,7 @@ if __name__ == "__main__":
     # sample, filter out invalid molecules, and save the valid molecules
     out_file = open(result_dir + "sampled_molecules.out", "w")
     num_valid, num_invalid = 0, 0
-    for _ in tqdm(num_batches):
+    for _ in tqdm(range(num_batches)):
         # sample molecules as integers
         sampled_ints = model.sample(
             batch_size=batch_size,
