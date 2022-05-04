@@ -14,7 +14,7 @@ def read_smiles_file(path, percentage):
 
 
 if __name__ == "__main__":
-    dataset_path = "../../chembl-data/chembl_28/chembl_28_sqlite/chembl28-cleaned.smi"
+    dataset_path = "../dataset/chembl28-cleaned.smi"
     output_vocab = "./chembl_selfies_vocab.yaml"
 
     smiles = read_smiles_file(dataset_path, 1)
